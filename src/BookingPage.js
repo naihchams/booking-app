@@ -22,9 +22,11 @@ function BookingPage() {
     time: "",
     roomSize: "",
     onlyFavourites: false,
-    collaborateRoom: false,
-    sRoom: false,
-    accelerateRoom: false,
+    meetingRoom: false,
+    // collaborateRoom: false,
+    // sRoom: false,
+    // accelerateRoom: false,
+    floor: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -84,7 +86,7 @@ function BookingPage() {
     {
       id: 5,
       name: "Collaborate",
-      location: "DFA",
+      location: "Area 2071",
       capacity: 6,
       favourite: false,
       availability: [
@@ -98,6 +100,14 @@ function BookingPage() {
 
   const [rooms, setRooms] = useState(roomsData);
 
+  const floors = [
+    ...new Set(
+      rooms
+        .map((room) => room.location)
+        .filter((location) => location !== undefined)
+    ),
+  ];
+
   const handleToggleFavorite = (roomId) => {
     setRooms((prevRooms) =>
       prevRooms.map((room) =>
@@ -105,7 +115,8 @@ function BookingPage() {
       )
     );
   };
-  const filteredRooms = roomsData.filter((room) => {
+
+  const filteredRooms = rooms.filter((room) => {
     if (
       searchQuery &&
       !room.name.toLowerCase().includes(searchQuery.toLowerCase())
@@ -134,6 +145,10 @@ function BookingPage() {
     }
 
     if (filters.onlyFavourites && !room.favourite) {
+      return false;
+    }
+
+    if (filters.floor && room.location !== filters.floor) {
       return false;
     }
 
@@ -212,7 +227,7 @@ function BookingPage() {
           onFilterChange={handleFilterChange}
         />
 
-        {rooms.map((room) => (
+        {filteredRooms.map((room) => (
           <RoomCard
             key={room.id}
             room={room}
@@ -239,6 +254,7 @@ function BookingPage() {
         onClose={() => setIsFilterOpen(false)}
         onSave={handleFilterChange}
         defaultValues={filters}
+        floors={floors}
       />
     </div>
   );

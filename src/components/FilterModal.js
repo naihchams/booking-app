@@ -1,12 +1,20 @@
 import React, { useState, useEffect } from "react";
 import "./FilterModal.css";
 
-function FilterModal({ isOpen, onClose, onSave, defaultValues = {} }) {
+function FilterModal({
+  isOpen,
+  onClose,
+  onSave,
+  defaultValues = {},
+  floors = [],
+}) {
   const [roomSize, setRoomSize] = useState("");
   const [onlyFavourites, setOnlyFavourites] = useState(false);
   const [sRoom, setSRoom] = useState(false);
   const [collaborateRoom, setCollaborateRoom] = useState(false);
   const [accelerateRoom, setAccelerateRoom] = useState(false);
+  const [meetingRoom, setMeetingRoom] = useState(false);
+  const [floor, setFloor] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -15,6 +23,8 @@ function FilterModal({ isOpen, onClose, onSave, defaultValues = {} }) {
       setSRoom(defaultValues.sRoom || false);
       setCollaborateRoom(defaultValues.collaborateRoom || false);
       setAccelerateRoom(defaultValues.accelerateRoom || false);
+      setMeetingRoom(defaultValues.meetingRoom || false);
+      setFloor(defaultValues.floor || "");
     }
   }, [isOpen]);
 
@@ -27,6 +37,8 @@ function FilterModal({ isOpen, onClose, onSave, defaultValues = {} }) {
       sRoom,
       collaborateRoom,
       accelerateRoom,
+      meetingRoom,
+      floor,
     };
     if (onSave) {
       onSave(newFilters);
@@ -45,6 +57,32 @@ function FilterModal({ isOpen, onClose, onSave, defaultValues = {} }) {
   return (
     <div className="filter-overlay" onClick={handleOverlayClick}>
       <div className="filter-content" onClick={handleContentClick}>
+        <h2>Floor</h2>
+        <div className="radio-group">
+          <label>
+            <input
+              type="radio"
+              name="floor"
+              value=""
+              checked={floor === ""}
+              onChange={() => setFloor("")}
+            />
+            All Floors
+          </label>
+          {floors.map((floorOption) => (
+            <label key={floorOption}>
+              <input
+                type="radio"
+                name="floor"
+                value={floorOption}
+                checked={floor === floorOption}
+                onChange={() => setFloor(floorOption)}
+              />
+              {floorOption.toUpperCase()}
+            </label>
+          ))}
+        </div>
+        <hr />
         <h2>Select room size</h2>
         <div className="radio-group">
           <label>
@@ -97,26 +135,10 @@ function FilterModal({ isOpen, onClose, onSave, defaultValues = {} }) {
         <label className="checkbox-row">
           <input
             type="checkbox"
-            checked={sRoom}
-            onChange={() => setSRoom(!sRoom)}
+            checked={meetingRoom}
+            onChange={() => setMeetingRoom(!meetingRoom)}
           />
-          S Room
-        </label>
-        <label className="checkbox-row">
-          <input
-            type="checkbox"
-            checked={accelerateRoom}
-            onChange={() => setAccelerateRoom(!accelerateRoom)}
-          />
-          Accelerate Room
-        </label>
-        <label className="checkbox-row">
-          <input
-            type="checkbox"
-            checked={collaborateRoom}
-            onChange={() => setCollaborateRoom(!collaborateRoom)}
-          />
-          Collaborate Room
+          Meeting Room
         </label>
 
         <button className="back-button" onClick={handleBackClick}>
