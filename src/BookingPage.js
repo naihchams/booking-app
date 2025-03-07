@@ -4,7 +4,6 @@ import accelerate from "./assets/accelerate.jpeg";
 import s1 from "./assets/S1 Meeting room.jpeg";
 import s2 from "./assets/S2 Meeeting room.jpeg";
 import collaborate from "./assets/collaborate.jpeg";
-
 import logoPlaceOs from "./assets/KJTech.png";
 import logoDff from "./assets/dff_logo.png";
 import SearchFilter from "./components/searchFilters";
@@ -23,11 +22,12 @@ function BookingPage() {
     time: "",
     roomSize: "",
     onlyFavourites: false,
-    meetingRoom: false,
-    bilateralRoom: false,
-    podRoom: false,
+    collaborateRoom: false,
+    sRoom: false,
+    accelerateRoom: false,
   });
   const [searchQuery, setSearchQuery] = useState("");
+
   const roomsData = [
     {
       id: 1,
@@ -35,9 +35,6 @@ function BookingPage() {
       location: "DFA",
       capacity: 2,
       favourite: false,
-      isMeetingRoom: true,
-      isBilateral: false,
-      isPod: false,
       imageUrl: s1,
       availability: [
         { date: "2025-03-01", times: ["08:00", "09:00", "10:00"] },
@@ -51,9 +48,6 @@ function BookingPage() {
       location: "DFA",
       capacity: 4,
       favourite: true,
-      isMeetingRoom: true,
-      isBilateral: false,
-      isPod: false,
       imageUrl: s2,
       availability: [
         { date: "2025-03-11", times: ["12:00", "13:00", "14:00"] },
@@ -67,9 +61,6 @@ function BookingPage() {
       location: "DFA",
       capacity: 9,
       favourite: true,
-      isMeetingRoom: true,
-      isBilateral: false,
-      isPod: false,
       availability: [
         { date: "2025-03-02", times: ["08:00", "09:00", "10:00", "11:00"] },
         { date: "2025-03-04", times: ["14:00", "15:00", "16:00"] },
@@ -83,9 +74,6 @@ function BookingPage() {
       location: "DFA",
       capacity: 6,
       favourite: true,
-      isMeetingRoom: true,
-      isBilateral: false,
-      isPod: false,
       availability: [
         { date: "2025-03-01", times: ["08:00", "09:00"] },
         { date: "2025-03-05", times: ["10:00", "11:00"] },
@@ -99,9 +87,6 @@ function BookingPage() {
       location: "DFA",
       capacity: 6,
       favourite: true,
-      isMeetingRoom: true,
-      isBilateral: false,
-      isPod: false,
       availability: [
         { date: "2025-03-03", times: ["13:00", "14:00"] },
         { date: "2025-03-06", times: ["08:00", "09:00"] },
@@ -110,32 +95,6 @@ function BookingPage() {
       booked: false,
     },
   ];
-
-  const handleBookClick = (roomId) => {
-    console.log("Booking room with ID:", roomId);
-    setIsModalOpen(true);
-  };
-
-  const handleSaveBooking = (newBooking) => {
-    console.log("New Booking:", newBooking);
-    setLastBooking(newBooking);
-
-    setIsModalOpen(false);
-
-    setIsSuccessOpen(true);
-  };
-
-  const handleCloseSuccess = () => {
-    setIsSuccessOpen(false);
-  };
-
-  const handleFilterClick = () => {
-    setIsFilterOpen(true);
-  };
-
-  const handleFilterChange = (newFilters) => {
-    setFilters(newFilters);
-  };
 
   const filteredRooms = roomsData.filter((room) => {
     if (
@@ -169,18 +128,51 @@ function BookingPage() {
       return false;
     }
 
-    if (filters.meetingRoom && !room.isMeetingRoom) {
-      return false;
-    }
-    if (filters.bilateralRoom && !room.isBilateral) {
-      return false;
-    }
-    if (filters.podRoom && !room.isPod) {
-      return false;
+    if (filters.sRoom || filters.collaborateRoom || filters.accelerateRoom) {
+      let facilityMatch = false;
+      if (filters.sRoom && ["s1", "s2"].includes(room.name.toLowerCase())) {
+        facilityMatch = true;
+      }
+      if (
+        filters.collaborateRoom &&
+        room.name.toLowerCase() === "collaborate"
+      ) {
+        facilityMatch = true;
+      }
+      if (filters.accelerateRoom && room.name.toLowerCase() === "accelerate") {
+        facilityMatch = true;
+      }
+      if (!facilityMatch) {
+        return false;
+      }
     }
 
     return true;
   });
+
+  const handleBookClick = (roomId) => {
+    console.log("Booking room with ID:", roomId);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveBooking = (newBooking) => {
+    console.log("New Booking:", newBooking);
+    setLastBooking(newBooking);
+    setIsModalOpen(false);
+    setIsSuccessOpen(true);
+  };
+
+  const handleCloseSuccess = () => {
+    setIsSuccessOpen(false);
+  };
+
+  const handleFilterClick = () => {
+    setIsFilterOpen(true);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }));
+  };
 
   return (
     <div className="booking-page">
@@ -235,9 +227,8 @@ function BookingPage() {
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
-        onSave={(modalFilters) =>
-          setFilters((prevFilters) => ({ ...prevFilters, ...modalFilters }))
-        }
+        onSave={handleFilterChange}
+        defaultValues={filters}
       />
     </div>
   );

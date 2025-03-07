@@ -1,18 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./FilterModal.css";
 
 function FilterModal({ isOpen, onClose, onSave, defaultValues = {} }) {
-  const [roomSize, setRoomSize] = useState(defaultValues.roomSize || "");
-  const [onlyFavourites, setOnlyFavourites] = useState(
-    defaultValues.onlyFavourites || false
-  );
-  const [meetingRoom, setMeetingRoom] = useState(
-    defaultValues.meetingRoom || false
-  );
-  const [bilateralRoom, setBilateralRoom] = useState(
-    defaultValues.bilateralRoom || false
-  );
-  const [podRoom, setPodRoom] = useState(defaultValues.podRoom || false);
+  const [roomSize, setRoomSize] = useState("");
+  const [onlyFavourites, setOnlyFavourites] = useState(false);
+  const [sRoom, setSRoom] = useState(false);
+  const [collaborateRoom, setCollaborateRoom] = useState(false);
+  const [accelerateRoom, setAccelerateRoom] = useState(false);
+
+  useEffect(() => {
+    if (isOpen) {
+      setRoomSize(defaultValues.roomSize || "");
+      setOnlyFavourites(defaultValues.onlyFavourites || false);
+      setSRoom(defaultValues.sRoom || false);
+      setCollaborateRoom(defaultValues.collaborateRoom || false);
+      setAccelerateRoom(defaultValues.accelerateRoom || false);
+    }
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -20,9 +24,9 @@ function FilterModal({ isOpen, onClose, onSave, defaultValues = {} }) {
     const newFilters = {
       roomSize,
       onlyFavourites,
-      meetingRoom,
-      bilateralRoom,
-      podRoom,
+      sRoom,
+      collaborateRoom,
+      accelerateRoom,
     };
     if (onSave) {
       onSave(newFilters);
@@ -93,26 +97,26 @@ function FilterModal({ isOpen, onClose, onSave, defaultValues = {} }) {
         <label className="checkbox-row">
           <input
             type="checkbox"
-            checked={meetingRoom}
-            onChange={() => setMeetingRoom(!meetingRoom)}
+            checked={sRoom}
+            onChange={() => setSRoom(!sRoom)}
           />
-          Meeting Room
+          S Room
         </label>
         <label className="checkbox-row">
           <input
             type="checkbox"
-            checked={bilateralRoom}
-            onChange={() => setBilateralRoom(!bilateralRoom)}
+            checked={accelerateRoom}
+            onChange={() => setAccelerateRoom(!accelerateRoom)}
           />
-          Bilateral Room
+          Accelerate Room
         </label>
         <label className="checkbox-row">
           <input
             type="checkbox"
-            checked={podRoom}
-            onChange={() => setPodRoom(!podRoom)}
+            checked={collaborateRoom}
+            onChange={() => setCollaborateRoom(!collaborateRoom)}
           />
-          Pod Room
+          Collaborate Room
         </label>
 
         <button className="back-button" onClick={handleBackClick}>
