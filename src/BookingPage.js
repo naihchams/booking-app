@@ -194,11 +194,11 @@ function BookingPage() {
         <NavLink to="/home" className="nav-item">
           <img src={iconHome} alt="Home" />
         </NavLink>
-        <NavLink to="/" className="nav-item">
-          <img src={iconBookings} alt="Booking" />
+        <NavLink to="/booking" className="nav-item">
+          <img src={iconLocation} alt="Booking" />
         </NavLink>
         <NavLink to="/location" className="nav-item">
-          <img src={iconLocation} alt="Location" />
+          <img src={iconBookings} alt="Location" />
         </NavLink>
         <NavLink to="/profile" className="nav-item">
           <img src={iconProfile} alt="Profile" />

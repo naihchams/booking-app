@@ -111,4 +111,15 @@
     border-top: 1px solid #ddd;
     background-color: #fff;
   }
+
+.nav-item img {
+  width: 24px;
+  height: 24px;
+  transition: filter 0.3s;
+}
+
+  .nav-item.active img {
+    filter: invert(12%) sepia(73%) saturate(5686%) 
+            hue-rotate(189deg) brightness(100%) contrast(122%);
+}
   
