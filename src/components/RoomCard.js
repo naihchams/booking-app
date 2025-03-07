@@ -1,9 +1,9 @@
 import React from "react";
-import { FaMapMarkerAlt, FaRegHeart } from "react-icons/fa";
+import { FaHeart, FaMapMarkerAlt, FaRegHeart } from "react-icons/fa";
 import "./RoomCard.css";
 
-function RoomCard({ room, onBook }) {
-  const { name, location, capacity, imageUrl, booked } = room;
+function RoomCard({ room, onBook, onToggleFavorite }) {
+  const { id, name, location, capacity, imageUrl, booked, favourite } = room;
 
   return (
     <div className="room-card">
@@ -30,7 +30,9 @@ function RoomCard({ room, onBook }) {
         )}
       </div>
 
-      <FaRegHeart className="favorite-icon" />
+      <div className="favorite-icon" onClick={() => onToggleFavorite(id)}>
+        {favourite ? <FaHeart className="favorited" /> : <FaRegHeart />}
+      </div>
     </div>
   );
 }

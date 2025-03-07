@@ -47,20 +47,20 @@ function BookingPage() {
       name: "S2",
       location: "DFA",
       capacity: 4,
-      favourite: true,
+      favourite: false,
       imageUrl: s2,
       availability: [
         { date: "2025-03-11", times: ["12:00", "13:00", "14:00"] },
         { date: "2025-03-03", times: ["08:00", "09:00", "10:00"] },
       ],
-      booked: true,
+      booked: false,
     },
     {
       id: 3,
       name: "Accelerate",
       location: "DFA",
       capacity: 9,
-      favourite: true,
+      favourite: false,
       availability: [
         { date: "2025-03-02", times: ["08:00", "09:00", "10:00", "11:00"] },
         { date: "2025-03-04", times: ["14:00", "15:00", "16:00"] },
@@ -73,7 +73,7 @@ function BookingPage() {
       name: "Collaborate",
       location: "DFA",
       capacity: 6,
-      favourite: true,
+      favourite: false,
       availability: [
         { date: "2025-03-01", times: ["08:00", "09:00"] },
         { date: "2025-03-05", times: ["10:00", "11:00"] },
@@ -86,7 +86,7 @@ function BookingPage() {
       name: "Collaborate",
       location: "DFA",
       capacity: 6,
-      favourite: true,
+      favourite: false,
       availability: [
         { date: "2025-03-03", times: ["13:00", "14:00"] },
         { date: "2025-03-06", times: ["08:00", "09:00"] },
@@ -96,6 +96,15 @@ function BookingPage() {
     },
   ];
 
+  const [rooms, setRooms] = useState(roomsData);
+
+  const handleToggleFavorite = (roomId) => {
+    setRooms((prevRooms) =>
+      prevRooms.map((room) =>
+        room.id === roomId ? { ...room, favourite: !room.favourite } : room
+      )
+    );
+  };
   const filteredRooms = roomsData.filter((room) => {
     if (
       searchQuery &&
@@ -203,11 +212,12 @@ function BookingPage() {
           onFilterChange={handleFilterChange}
         />
 
-        {filteredRooms.map((room) => (
+        {rooms.map((room) => (
           <RoomCard
             key={room.id}
             room={room}
             onBook={() => handleBookClick(room.id)}
+            onToggleFavorite={handleToggleFavorite}
           />
         ))}
       </div>
