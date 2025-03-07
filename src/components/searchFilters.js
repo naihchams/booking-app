@@ -3,17 +3,16 @@ import "./SearchFilter.css";
 import SearchBar from "./searchBar";
 import FilterPanel from "./FilterPanel";
 
-function SearchFilter({ handleFilterClick, onFilterChange }) {
-  const [searchQuery, setSearchQuery] = useState("Emirates Tower");
-
-  const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value);
-  };
-
+function SearchFilter({
+  searchQuery,
+  onSearchChange,
+  handleFilterClick,
+  onFilterChange,
+}) {
   return (
     <div className="search-filter-container">
       <div className="search-row">
-        <SearchBar value={searchQuery} onChange={handleSearchChange} />
+        <SearchBar value={searchQuery} onChange={onSearchChange} />
       </div>
       <FilterPanel
         handleFilterClick={handleFilterClick}

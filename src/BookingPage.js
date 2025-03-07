@@ -30,7 +30,7 @@ function BookingPage() {
     bilateralRoom: false,
     podRoom: false,
   });
-
+  const [searchQuery, setSearchQuery] = useState("");
   const roomsData = [
     {
       id: 1,
@@ -146,9 +146,13 @@ function BookingPage() {
   };
 
   const filteredRooms = roomsData.filter((room) => {
-    let matches = true;
+    if (
+      searchQuery &&
+      !room.name.toLowerCase().includes(searchQuery.toLowerCase())
+    ) {
+      return false;
+    }
 
-    // Filter by date and time
     if (filters.date) {
       const availForDate = room.availability.find(
         (avail) => avail.date === filters.date
@@ -165,17 +169,14 @@ function BookingPage() {
       }
     }
 
-    // Filter by room size (assuming filters.roomSize represents minimum capacity)
     if (filters.roomSize && room.capacity < parseInt(filters.roomSize, 10)) {
       return false;
     }
 
-    // Filter favourites if selected
     if (filters.onlyFavourites && !room.favourite) {
       return false;
     }
 
-    // Filter by facilities: each one is checked only if the filter is active
     if (filters.meetingRoom && !room.isMeetingRoom) {
       return false;
     }
@@ -186,7 +187,7 @@ function BookingPage() {
       return false;
     }
 
-    return matches;
+    return true;
   });
 
   return (
@@ -212,9 +213,12 @@ function BookingPage() {
 
       <div className="content-area">
         <SearchFilter
+          searchQuery={searchQuery}
+          onSearchChange={(e) => setSearchQuery(e.target.value)}
           handleFilterClick={handleFilterClick}
           onFilterChange={handleFilterChange}
         />
+
         {filteredRooms.map((room) => (
           <RoomCard
             key={room.id}
