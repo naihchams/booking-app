@@ -1,12 +1,10 @@
 import React, { useState } from "react";
 import "./BookingPage.css";
-import sampleRoom from "./assets/accelerate.jpeg";
-import iconHome from "./assets/home.png";
-import iconBookings from "./assets/location.png";
-import iconLocation from "./assets/house-door.png";
+import accelerate from "./assets/accelerate.jpeg";
+import s1 from "./assets/S1 Meeting room.jpeg";
+import s2 from "./assets/S2 Meeeting room.jpeg";
+import collaborate from "./assets/collaborate.jpeg";
 
-import iconProfile from "./assets/schedule.png";
-import iconHeart from "./assets/heart.png";
 import logoPlaceOs from "./assets/KJTech.png";
 import logoDff from "./assets/dff_logo.png";
 import SearchFilter from "./components/searchFilters";
@@ -14,7 +12,6 @@ import RoomCard from "./components/RoomCard";
 import NewBookingModal from "./components/NewBookingModal";
 import BookingSuccessModal from "./components/BookingSuccessModal";
 import FilterModal from "./components/FilterModal";
-import { NavLink } from "react-router-dom";
 
 function BookingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,8 +38,7 @@ function BookingPage() {
       isMeetingRoom: true,
       isBilateral: false,
       isPod: false,
-      imageUrl:
-        "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
+      imageUrl: s1,
       availability: [
         { date: "2025-03-01", times: ["08:00", "09:00", "10:00"] },
         { date: "2025-03-02", times: ["09:00", "10:00", "11:00"] },
@@ -58,8 +54,7 @@ function BookingPage() {
       isMeetingRoom: true,
       isBilateral: false,
       isPod: false,
-      imageUrl:
-        "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
+      imageUrl: s2,
       availability: [
         { date: "2025-03-11", times: ["12:00", "13:00", "14:00"] },
         { date: "2025-03-03", times: ["08:00", "09:00", "10:00"] },
@@ -79,8 +74,7 @@ function BookingPage() {
         { date: "2025-03-02", times: ["08:00", "09:00", "10:00", "11:00"] },
         { date: "2025-03-04", times: ["14:00", "15:00", "16:00"] },
       ],
-      imageUrl:
-        "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
+      imageUrl: accelerate,
       booked: false,
     },
     {
@@ -96,8 +90,7 @@ function BookingPage() {
         { date: "2025-03-01", times: ["08:00", "09:00"] },
         { date: "2025-03-05", times: ["10:00", "11:00"] },
       ],
-      imageUrl:
-        "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
+      imageUrl: collaborate,
       booked: false,
     },
     {
@@ -113,8 +106,7 @@ function BookingPage() {
         { date: "2025-03-03", times: ["13:00", "14:00"] },
         { date: "2025-03-06", times: ["08:00", "09:00"] },
       ],
-      imageUrl:
-        "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
+      imageUrl: collaborate,
       booked: false,
     },
   ];
