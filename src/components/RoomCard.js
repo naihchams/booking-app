@@ -1,5 +1,5 @@
 import React from "react";
-import { FaMapMarkerAlt, FaRegHeart } from "react-icons/fa"; // Example icons
+import { FaMapMarkerAlt, FaRegHeart } from "react-icons/fa";
 import "./RoomCard.css";
 
 function RoomCard({ room, onBook }) {

@@ -6,6 +6,40 @@ function FilterPanel({ handleFilterClick }) {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
 
+  const getDateOptions = () => {
+    const dates = [];
+    const today = new Date();
+    for (let i = 0; i <= 10; i++) {
+      const date = new Date();
+      date.setDate(today.getDate() + i);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      dates.push(`${year}-${month}-${day}`);
+    }
+    return dates;
+  };
+
+  const getTimeOptions = () => {
+    const times = [];
+    for (let hour = 0; hour < 24; hour++) {
+      for (let minute = 0; minute < 60; minute++) {
+        const value = `${String(hour).padStart(2, "0")}:${String(
+          minute
+        ).padStart(2, "0")}`;
+        const hour12 = hour % 12 === 0 ? 12 : hour % 12;
+        const minuteStr = String(minute).padStart(2, "0");
+        const suffix = hour < 12 ? "AM" : "PM";
+        const label = `${hour12}:${minuteStr} ${suffix}`;
+        times.push({ value, label });
+      }
+    }
+    return times;
+  };
+
+  const dateOptions = getDateOptions();
+  const timeOptions = getTimeOptions();
+
   const handleDateChange = (e) => {
     setSelectedDate(e.target.value);
   };
@@ -32,9 +66,11 @@ function FilterPanel({ handleFilterClick }) {
             onChange={handleDateChange}
           >
             <option value="">Select Date</option>
-            <option value="2025-03-01">2025-03-01</option>
-            <option value="2025-03-02">2025-03-02</option>
-            <option value="2025-03-03">2025-03-03</option>
+            {dateOptions.map((date) => (
+              <option key={date} value={date}>
+                {date}
+              </option>
+            ))}
           </select>
         </div>
 
@@ -47,9 +83,11 @@ function FilterPanel({ handleFilterClick }) {
             onChange={handleTimeChange}
           >
             <option value="">Select Time</option>
-            <option value="08:00">08:00</option>
-            <option value="09:00">09:00</option>
-            <option value="10:00">10:00</option>
+            {timeOptions.map((time) => (
+              <option key={time.value} value={time.value}>
+                {time.label}
+              </option>
+            ))}
           </select>
         </div>
       </div>
