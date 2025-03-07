@@ -3,30 +3,22 @@ import "./SearchFilter.css";
 import SearchBar from "./searchBar";
 import FilterPanel from "./FilterPanel";
 
-function SearchFilter({ handleFilterClick }) {
+function SearchFilter({ handleFilterClick, onFilterChange }) {
   const [searchQuery, setSearchQuery] = useState("Emirates Tower");
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
-  };
-
-  const handleTimeChange = (e) => {
-    setSelectedTime(e.target.value);
-  };
-
   return (
     <div className="search-filter-container">
       <div className="search-row">
-        <SearchBar />
+        <SearchBar value={searchQuery} onChange={handleSearchChange} />
       </div>
-
-      <FilterPanel handleFilterClick={handleFilterClick} />
+      <FilterPanel
+        handleFilterClick={handleFilterClick}
+        onFilterChange={onFilterChange}
+      />
     </div>
   );
 }

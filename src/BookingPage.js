@@ -21,6 +21,7 @@ function BookingPage() {
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [lastBooking, setLastBooking] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [filters, setFilters] = useState({ date: "", time: "" });
 
   const roomsData = [
     {
@@ -30,6 +31,10 @@ function BookingPage() {
       capacity: 2,
       imageUrl:
         "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
+      availability: [
+        { date: "2025-03-01", times: ["08:00", "09:00", "10:00"] },
+        { date: "2025-03-02", times: ["09:00", "10:00", "11:00"] },
+      ],
       booked: false,
     },
     {
@@ -39,6 +44,10 @@ function BookingPage() {
       capacity: 4,
       imageUrl:
         "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
+      availability: [
+        { date: "2025-03-11", times: ["12:00", "13:00", "14:00"] },
+        { date: "2025-03-03", times: ["08:00", "09:00", "10:00"] },
+      ],
       booked: true,
     },
     {
@@ -46,6 +55,10 @@ function BookingPage() {
       name: "Accelerate",
       location: "DFA",
       capacity: 9,
+      availability: [
+        { date: "2025-03-02", times: ["08:00", "09:00", "10:00", "11:00"] },
+        { date: "2025-03-04", times: ["14:00", "15:00", "16:00"] },
+      ],
       imageUrl:
         "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
       booked: false,
@@ -55,6 +68,10 @@ function BookingPage() {
       name: "Collaborate",
       location: "DFA",
       capacity: 6,
+      availability: [
+        { date: "2025-03-01", times: ["08:00", "09:00"] },
+        { date: "2025-03-05", times: ["10:00", "11:00"] },
+      ],
       imageUrl:
         "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
       booked: false,
@@ -64,6 +81,10 @@ function BookingPage() {
       name: "Collaborate",
       location: "DFA",
       capacity: 6,
+      availability: [
+        { date: "2025-03-03", times: ["13:00", "14:00"] },
+        { date: "2025-03-06", times: ["08:00", "09:00"] },
+      ],
       imageUrl:
         "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
       booked: false,
@@ -92,6 +113,29 @@ function BookingPage() {
     setIsFilterOpen(true);
   };
 
+  const handleFilterChange = (newFilters) => {
+    setFilters(newFilters);
+  };
+
+  const filteredRooms = roomsData.filter((room) => {
+    if (filters.date) {
+      const availForDate = room.availability.find(
+        (avail) => avail.date === filters.date
+      );
+      if (!availForDate) return false;
+      if (filters.time) {
+        return availForDate.times.includes(filters.time);
+      }
+      return true;
+    }
+    if (filters.time) {
+      return room.availability.some((avail) =>
+        avail.times.includes(filters.time)
+      );
+    }
+    return true;
+  });
+
   return (
     <div className="booking-page">
       <header className="booking-header">
@@ -114,8 +158,11 @@ function BookingPage() {
       </header>
 
       <div className="content-area">
-        <SearchFilter handleFilterClick={handleFilterClick} />
-        {roomsData.map((room) => (
+        <SearchFilter
+          handleFilterClick={handleFilterClick}
+          onFilterChange={handleFilterChange}
+        />
+        {filteredRooms.map((room) => (
           <RoomCard
             key={room.id}
             room={room}
@@ -123,6 +170,7 @@ function BookingPage() {
           />
         ))}
       </div>
+
       <NewBookingModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -138,7 +186,9 @@ function BookingPage() {
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
+        onFilterChange={handleFilterChange}
       />
+
       <nav className="bottom-nav">
         <div className="nav-item">
           <img src={iconHome} alt="Home" />

@@ -1,10 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaChevronDown } from "react-icons/fa";
 import "./FilterPanel.css";
 
-function FilterPanel({ handleFilterClick }) {
+function FilterPanel({ handleFilterClick, onFilterChange }) {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
+
+  useEffect(() => {
+    onFilterChange({ date: selectedDate, time: selectedTime });
+  }, [selectedDate, selectedTime, onFilterChange]);
 
   const getDateOptions = () => {
     const dates = [];
@@ -23,7 +27,7 @@ function FilterPanel({ handleFilterClick }) {
   const getTimeOptions = () => {
     const times = [];
     for (let hour = 0; hour < 24; hour++) {
-      for (let minute = 0; minute < 60; minute++) {
+      for (let minute = 0; minute < 60; minute += 15) {
         const value = `${String(hour).padStart(2, "0")}:${String(
           minute
         ).padStart(2, "0")}`;
