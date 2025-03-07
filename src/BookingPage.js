@@ -15,6 +15,7 @@ import RoomCard from "./components/RoomCard";
 import NewBookingModal from "./components/NewBookingModal";
 import BookingSuccessModal from "./components/BookingSuccessModal";
 import FilterModal from "./components/FilterModal";
+import { NavLink } from "react-router-dom";
 
 function BookingPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -190,18 +191,18 @@ function BookingPage() {
       />
 
       <nav className="bottom-nav">
-        <div className="nav-item">
+        <NavLink to="/home" className="nav-item">
           <img src={iconHome} alt="Home" />
-        </div>
-        <div className="nav-item">
-          <img src={iconBookings} alt="booking" />
-        </div>
-        <div className="nav-item">
-          <img src={iconLocation} alt="location" />
-        </div>
-        <div className="nav-item">
+        </NavLink>
+        <NavLink to="/" className="nav-item">
+          <img src={iconBookings} alt="Booking" />
+        </NavLink>
+        <NavLink to="/location" className="nav-item">
+          <img src={iconLocation} alt="Location" />
+        </NavLink>
+        <NavLink to="/profile" className="nav-item">
           <img src={iconProfile} alt="Profile" />
-        </div>
+        </NavLink>
       </nav>
     </div>
   );

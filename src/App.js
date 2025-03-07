@@ -1,8 +1,12 @@
 import React, { Component } from "react";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { config } from "./Config";
 import { PublicClientApplication } from "@azure/msal-browser";
 import BookingPage from "./BookingPage";
+import QRPage from "./qr-page";
+import LocationPage from "./location_page";
+import ProfilePage from "./profilePage";
+import { Navigate } from "react-router-dom";
 
 class App extends Component {
   constructor(props) {
@@ -12,7 +16,6 @@ class App extends Component {
       isAuthenticated: false,
       user: {},
     };
-    this.login = this.login.bind(this);
     this.PublicClientApplication = new PublicClientApplication({
       auth: {
         clientId: config.appId,
@@ -27,8 +30,6 @@ class App extends Component {
 
   async componentDidMount() {
     try {
-      await this.PublicClientApplication.initialize();
-
       const response =
         await this.PublicClientApplication.handleRedirectPromise();
       if (response && response.account) {
@@ -43,14 +44,6 @@ class App extends Component {
       console.error("MSAL error:", err);
       this.setState({ error: err });
     }
-  }
-
-  login() {
-    console.log("Executing loginRedirect...");
-    this.PublicClientApplication.loginRedirect({
-      scopes: config.scopes,
-      prompt: "select_account",
-    });
   }
 
   login = async () => {
@@ -70,7 +63,20 @@ class App extends Component {
   }
 
   render() {
-    return <BookingPage onLogin={this.login} />;
+    return (
+      <Router>
+        <Routes>
+          <Route path="/home" element={<QRPage />} />
+          <Route
+            path="/booking"
+            element={<BookingPage onLogin={this.login} />}
+          />
+          <Route path="/" element={<BookingPage onLogin={this.login} />} />
+          <Route path="/location" element={<LocationPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
+        </Routes>
+      </Router>
+    );
   }
 }
 
