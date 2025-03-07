@@ -9,7 +9,6 @@ import iconProfile from "./assets/schedule.png";
 import iconHeart from "./assets/heart.png";
 import logoPlaceOs from "./assets/KJTech.png";
 import logoDff from "./assets/dff_logo.png";
-import SearchFilterMUI from "./components/searchFilters";
 import SearchFilter from "./components/searchFilters";
 import RoomCard from "./components/RoomCard";
 import NewBookingModal from "./components/NewBookingModal";
@@ -22,7 +21,15 @@ function BookingPage() {
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [lastBooking, setLastBooking] = useState(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [filters, setFilters] = useState({ date: "", time: "" });
+  const [filters, setFilters] = useState({
+    date: "",
+    time: "",
+    roomSize: "",
+    onlyFavourites: false,
+    meetingRoom: false,
+    bilateralRoom: false,
+    podRoom: false,
+  });
 
   const roomsData = [
     {
@@ -30,6 +37,10 @@ function BookingPage() {
       name: "S1",
       location: "DFA",
       capacity: 2,
+      favourite: false,
+      isMeetingRoom: true,
+      isBilateral: false,
+      isPod: false,
       imageUrl:
         "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
       availability: [
@@ -43,6 +54,10 @@ function BookingPage() {
       name: "S2",
       location: "DFA",
       capacity: 4,
+      favourite: true,
+      isMeetingRoom: true,
+      isBilateral: false,
+      isPod: false,
       imageUrl:
         "https://t4.ftcdn.net/jpg/00/80/91/11/360_F_80911186_RoBCsyLrNTrG7Y1EOyCsaCJO5DyHgTox.jpg",
       availability: [
@@ -56,6 +71,10 @@ function BookingPage() {
       name: "Accelerate",
       location: "DFA",
       capacity: 9,
+      favourite: true,
+      isMeetingRoom: true,
+      isBilateral: false,
+      isPod: false,
       availability: [
         { date: "2025-03-02", times: ["08:00", "09:00", "10:00", "11:00"] },
         { date: "2025-03-04", times: ["14:00", "15:00", "16:00"] },
@@ -69,6 +88,10 @@ function BookingPage() {
       name: "Collaborate",
       location: "DFA",
       capacity: 6,
+      favourite: true,
+      isMeetingRoom: true,
+      isBilateral: false,
+      isPod: false,
       availability: [
         { date: "2025-03-01", times: ["08:00", "09:00"] },
         { date: "2025-03-05", times: ["10:00", "11:00"] },
@@ -82,6 +105,10 @@ function BookingPage() {
       name: "Collaborate",
       location: "DFA",
       capacity: 6,
+      favourite: true,
+      isMeetingRoom: true,
+      isBilateral: false,
+      isPod: false,
       availability: [
         { date: "2025-03-03", times: ["13:00", "14:00"] },
         { date: "2025-03-06", times: ["08:00", "09:00"] },
@@ -119,22 +146,47 @@ function BookingPage() {
   };
 
   const filteredRooms = roomsData.filter((room) => {
+    let matches = true;
+
+    // Filter by date and time
     if (filters.date) {
       const availForDate = room.availability.find(
         (avail) => avail.date === filters.date
       );
       if (!availForDate) return false;
-      if (filters.time) {
-        return availForDate.times.includes(filters.time);
+      if (filters.time && !availForDate.times.includes(filters.time)) {
+        return false;
       }
-      return true;
+    } else if (filters.time) {
+      if (
+        !room.availability.some((avail) => avail.times.includes(filters.time))
+      ) {
+        return false;
+      }
     }
-    if (filters.time) {
-      return room.availability.some((avail) =>
-        avail.times.includes(filters.time)
-      );
+
+    // Filter by room size (assuming filters.roomSize represents minimum capacity)
+    if (filters.roomSize && room.capacity < parseInt(filters.roomSize, 10)) {
+      return false;
     }
-    return true;
+
+    // Filter favourites if selected
+    if (filters.onlyFavourites && !room.favourite) {
+      return false;
+    }
+
+    // Filter by facilities: each one is checked only if the filter is active
+    if (filters.meetingRoom && !room.isMeetingRoom) {
+      return false;
+    }
+    if (filters.bilateralRoom && !room.isBilateral) {
+      return false;
+    }
+    if (filters.podRoom && !room.isPod) {
+      return false;
+    }
+
+    return matches;
   });
 
   return (
@@ -187,23 +239,10 @@ function BookingPage() {
       <FilterModal
         isOpen={isFilterOpen}
         onClose={() => setIsFilterOpen(false)}
-        onFilterChange={handleFilterChange}
+        onSave={(modalFilters) =>
+          setFilters((prevFilters) => ({ ...prevFilters, ...modalFilters }))
+        }
       />
-
-      <nav className="bottom-nav">
-        <NavLink to="/home" className="nav-item">
-          <img src={iconHome} alt="Home" />
-        </NavLink>
-        <NavLink to="/booking" className="nav-item">
-          <img src={iconLocation} alt="Booking" />
-        </NavLink>
-        <NavLink to="/location" className="nav-item">
-          <img src={iconBookings} alt="Location" />
-        </NavLink>
-        <NavLink to="/profile" className="nav-item">
-          <img src={iconProfile} alt="Profile" />
-        </NavLink>
-      </nav>
     </div>
   );
 }

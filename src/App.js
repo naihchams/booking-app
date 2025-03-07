@@ -4,8 +4,6 @@ import { config } from "./Config";
 import { PublicClientApplication } from "@azure/msal-browser";
 import BookingPage from "./BookingPage";
 import QRPage from "./qr-page";
-import LocationPage from "./location_page";
-import ProfilePage from "./profilePage";
 import { Navigate } from "react-router-dom";
 
 class App extends Component {
@@ -63,20 +61,7 @@ class App extends Component {
   }
 
   render() {
-    return (
-      <Router>
-        <Routes>
-          <Route path="/home" element={<QRPage />} />
-          <Route
-            path="/booking"
-            element={<BookingPage onLogin={this.login} />}
-          />
-          <Route path="/" element={<BookingPage onLogin={this.login} />} />
-          <Route path="/location" element={<LocationPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-        </Routes>
-      </Router>
-    );
+    return <BookingPage />;
   }
 }
 

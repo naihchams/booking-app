@@ -23,7 +23,6 @@
   flex: 1;
   overflow-y: auto;
   overflow-x: hidden; 
-  margin-bottom: 60px;
   display: flex;
   flex-direction: column; 
   align-items: center;   
@@ -32,38 +31,6 @@
   box-sizing: border-box;
 }
 
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 60px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  border-top: 1px solid #ddd;
-  background-color: #fff;
-}
-
-.nav-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  font-size: 12px;
-  color: #444;
-}
-
-.nav-item img {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 4px;
-  transition: filter 0.3s;
-}
-
-.nav-item.active img {
-  filter: invert(12%) sepia(73%) saturate(5686%) 
-          hue-rotate(189deg) brightness(100%) contrast(122%);
-}
 
 .room-card {
   display: flex;
