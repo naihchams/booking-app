@@ -13,8 +13,8 @@ import { fetchEvents } from "./api/eventApi";
 import { fetchAvailibily } from "./api/availabilityApi";
 import { createEvent } from "./api/eventApi";
 
-const PLACEHOLDER_IMAGE =
-  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQY8Xj6usFUj6us0gwBVXa5p9Wl0qMEpaS9gQ&s";
+const ACCELERATE_IMAGE =
+  "https://kjtech-lab-bucket.s3.me-central-1.amazonaws.com/Accelerate.jpeg";
 
 function BookingPage() {
   const [rooms, setRooms] = useState([]);
@@ -46,7 +46,10 @@ function BookingPage() {
             location: system.map_id || "Default Location",
             capacity: system.capacity,
             favourite: false,
-            imageUrl: system.images?.[0] || PLACEHOLDER_IMAGE,
+            imageUrl:
+              system.images?.[0] || system.name.contains("accelerate")
+                ? ACCELERATE_IMAGE
+                : "",
             availability: [],
             booked: false,
             zones: system.zones || [],
