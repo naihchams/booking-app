@@ -1,24 +1,28 @@
-// NewBookingModal.js
 import React, { useState, useEffect } from "react";
 import "./NewBookingModal.css";
 
 function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
   const [title, setTitle] = useState("");
   const [space, setSpace] = useState("");
-  const [date, setDate] = useState("2025-03-15T14:00");
+
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+    const tzOffset = now.getTimezoneOffset() * 60000;
+    return new Date(now - tzOffset).toISOString().slice(0, 16);
+  };
+
+  const [date, setDate] = useState(getCurrentDateTime());
   const [duration, setDuration] = useState("30");
 
   useEffect(() => {
     if (selectedRoom) {
-      // Pre-fill fields using selected room data
       setTitle(`Booking for ${selectedRoom.name}`);
       setSpace(selectedRoom.name);
-      // Optionally update date or other fields if needed
     }
   }, [selectedRoom]);
 
   const handleSave = (e) => {
-    // Prevent any default behavior that might send the event object to onSave
     e.preventDefault();
     const newBooking = {
       title,
