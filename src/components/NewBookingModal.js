@@ -1,14 +1,32 @@
-import React, { useState } from "react";
+// NewBookingModal.js
+import React, { useState, useEffect } from "react";
 import "./NewBookingModal.css";
 
-function NewBookingModal({ isOpen, onClose, onSave }) {
-  const [title, setTitle] = useState("Workshop Meeting");
-  const [space, setSpace] = useState("Accelerate");
-  const [date, setDate] = useState("2025-02-22T14:00");
+function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
+  const [title, setTitle] = useState("");
+  const [space, setSpace] = useState("");
+  const [date, setDate] = useState("2025-03-15T14:00");
   const [duration, setDuration] = useState("30");
 
-  const handleSave = () => {
-    const newBooking = { title, space, date, duration };
+  useEffect(() => {
+    if (selectedRoom) {
+      // Pre-fill fields using selected room data
+      setTitle(`Booking for ${selectedRoom.name}`);
+      setSpace(selectedRoom.name);
+      // Optionally update date or other fields if needed
+    }
+  }, [selectedRoom]);
+
+  const handleSave = (e) => {
+    // Prevent any default behavior that might send the event object to onSave
+    e.preventDefault();
+    const newBooking = {
+      title,
+      space,
+      date,
+      duration,
+      system_id: selectedRoom ? selectedRoom.id : undefined,
+    };
     onSave(newBooking);
     onClose();
   };

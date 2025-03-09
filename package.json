@@ -2,6 +2,7 @@
   "name": "booking-app",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://smartoffice.dubaifuture.ae",
   "dependencies": {
     "@azure/msal-browser": "^4.5.1",
     "@emotion/react": "^11.14.0",
@@ -11,6 +12,7 @@
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
     "@testing-library/user-event": "^13.5.0",
+    "axios": "^1.8.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",

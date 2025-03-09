@@ -1,9 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./BookingPage.css";
-import accelerate from "./assets/accelerate.jpeg";
-import s1 from "./assets/S1 Meeting room.jpeg";
-import s2 from "./assets/S2 Meeeting room.jpeg";
-import collaborate from "./assets/collaborate.jpeg";
 import logoPlaceOs from "./assets/KJTech.png";
 import logoDff from "./assets/dff_logo.png";
 import SearchFilter from "./components/searchFilters";
@@ -11,8 +7,18 @@ import RoomCard from "./components/RoomCard";
 import NewBookingModal from "./components/NewBookingModal";
 import BookingSuccessModal from "./components/BookingSuccessModal";
 import FilterModal from "./components/FilterModal";
+import { fetchSystems } from "./api/systemApi";
+// import { fetchPlaces } from "./api/placeApi";
+import { fetchEvents } from "./api/eventApi";
+import { fetchAvailibily } from "./api/availabilityApi";
+import { createEvent } from "./api/eventApi";
+
+const PLACEHOLDER_IMAGE =
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQY8Xj6usFUj6us0gwBVXa5p9Wl0qMEpaS9gQ&s";
 
 function BookingPage() {
+  const [rooms, setRooms] = useState([]);
+  const [selectedRoom, setSelectedRoom] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSuccessOpen, setIsSuccessOpen] = useState(false);
   const [lastBooking, setLastBooking] = useState(null);
@@ -23,82 +29,63 @@ function BookingPage() {
     roomSize: "",
     onlyFavourites: false,
     meetingRoom: false,
-    // collaborateRoom: false,
-    // sRoom: false,
-    // accelerateRoom: false,
     floor: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
 
-  const roomsData = [
-    {
-      id: 1,
-      name: "S1",
-      location: "DFA",
-      capacity: 2,
-      favourite: false,
-      imageUrl: s1,
-      availability: [
-        { date: "2025-03-01", times: ["08:00", "09:00", "10:00"] },
-        { date: "2025-03-02", times: ["09:00", "10:00", "11:00"] },
-      ],
-      booked: false,
-    },
-    {
-      id: 2,
-      name: "S2",
-      location: "DFA",
-      capacity: 4,
-      favourite: false,
-      imageUrl: s2,
-      availability: [
-        { date: "2025-03-11", times: ["12:00", "13:00", "14:00"] },
-        { date: "2025-03-03", times: ["08:00", "09:00", "10:00"] },
-      ],
-      booked: false,
-    },
-    {
-      id: 3,
-      name: "Accelerate",
-      location: "DFA",
-      capacity: 9,
-      favourite: false,
-      availability: [
-        { date: "2025-03-02", times: ["08:00", "09:00", "10:00", "11:00"] },
-        { date: "2025-03-04", times: ["14:00", "15:00", "16:00"] },
-      ],
-      imageUrl: accelerate,
-      booked: false,
-    },
-    {
-      id: 4,
-      name: "Collaborate",
-      location: "DFA",
-      capacity: 6,
-      favourite: false,
-      availability: [
-        { date: "2025-03-01", times: ["08:00", "09:00"] },
-        { date: "2025-03-05", times: ["10:00", "11:00"] },
-      ],
-      imageUrl: collaborate,
-      booked: false,
-    },
-    {
-      id: 5,
-      name: "Collaborate",
-      location: "Area 2071",
-      capacity: 6,
-      favourite: false,
-      availability: [
-        { date: "2025-03-03", times: ["13:00", "14:00"] },
-        { date: "2025-03-06", times: ["08:00", "09:00"] },
-      ],
-      imageUrl: collaborate,
-      booked: false,
-    },
-  ];
+  useEffect(() => {
+    async function loadRooms() {
+      try {
+        const systemsResponse = await fetchSystems();
+        const systems = systemsResponse.data
+          .filter((system) => system.bookable)
+          .map((system) => ({
+            id: system.id,
+            email: system.email,
+            name: system.display_name || system.name,
+            location: system.map_id || "Default Location",
+            capacity: system.capacity,
+            favourite: false,
+            imageUrl: system.images?.[0] || PLACEHOLDER_IMAGE,
+            availability: [],
+            booked: false,
+            zones: system.zones || [],
+          }));
+        setRooms([...systems]);
+      } catch (error) {
+        console.error("Error fetching data from API", error);
+      }
+    }
+    loadRooms();
+  }, []);
 
-  const [rooms, setRooms] = useState(roomsData);
+  useEffect(() => {
+    async function checkAvailability() {
+      if (filters.date && filters.time) {
+        const dateTimeStr = `${filters.date}T${filters.time}:00`;
+        const periodStart = Math.floor(new Date(dateTimeStr).getTime() / 1000);
+        const periodEnd = periodStart + 30 * 60;
+
+        try {
+          const availabilityData = await fetchAvailibily(
+            periodStart,
+            periodEnd
+          );
+          setRooms((prevRooms) =>
+            prevRooms.map((room) => {
+              const isBooked = availabilityData.find(
+                (entry) => entry.system_id === room.id
+              );
+              return { ...room, booked: !!isBooked };
+            })
+          );
+        } catch (error) {
+          console.error("Error checking availability", error);
+        }
+      }
+    }
+    checkAvailability();
+  }, [filters.date, filters.time]);
 
   const floors = [
     ...new Set(
@@ -116,28 +103,53 @@ function BookingPage() {
     );
   };
 
+  const handleBookClick = (room) => {
+    setSelectedRoom(room);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveBooking = async (newBooking) => {
+    const newEventData = {
+      event_start: Math.floor(new Date(newBooking.date).getTime() / 1000),
+      event_end:
+        Math.floor(new Date(newBooking.date).getTime() / 1000) +
+        newBooking.duration * 60,
+      attendees: [],
+      system_id: newBooking.system_id,
+      private: true,
+      all_day: false,
+      title: newBooking.title,
+    };
+
+    try {
+      const createdEvent = await createEvent(newEventData);
+      setIsModalOpen(false);
+      setIsSuccessOpen(true);
+    } catch (error) {
+      console.error("Error creating event", error);
+    }
+  };
+
+  const handleCloseSuccess = () => {
+    setIsSuccessOpen(false);
+  };
+
+  const handleFilterClick = () => {
+    setIsFilterOpen(true);
+  };
+
+  const handleFilterChange = (newFilters) => {
+    setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }));
+  };
+
   const filteredRooms = rooms.filter((room) => {
+    if (room.booked) return false;
+
     if (
       searchQuery &&
       !room.name.toLowerCase().includes(searchQuery.toLowerCase())
     ) {
       return false;
-    }
-
-    if (filters.date) {
-      const availForDate = room.availability.find(
-        (avail) => avail.date === filters.date
-      );
-      if (!availForDate) return false;
-      if (filters.time && !availForDate.times.includes(filters.time)) {
-        return false;
-      }
-    } else if (filters.time) {
-      if (
-        !room.availability.some((avail) => avail.times.includes(filters.time))
-      ) {
-        return false;
-      }
     }
 
     if (filters.roomSize && room.capacity < parseInt(filters.roomSize, 10)) {
@@ -152,51 +164,8 @@ function BookingPage() {
       return false;
     }
 
-    if (filters.sRoom || filters.collaborateRoom || filters.accelerateRoom) {
-      let facilityMatch = false;
-      if (filters.sRoom && ["s1", "s2"].includes(room.name.toLowerCase())) {
-        facilityMatch = true;
-      }
-      if (
-        filters.collaborateRoom &&
-        room.name.toLowerCase() === "collaborate"
-      ) {
-        facilityMatch = true;
-      }
-      if (filters.accelerateRoom && room.name.toLowerCase() === "accelerate") {
-        facilityMatch = true;
-      }
-      if (!facilityMatch) {
-        return false;
-      }
-    }
-
     return true;
   });
-
-  const handleBookClick = (roomId) => {
-    console.log("Booking room with ID:", roomId);
-    setIsModalOpen(true);
-  };
-
-  const handleSaveBooking = (newBooking) => {
-    console.log("New Booking:", newBooking);
-    setLastBooking(newBooking);
-    setIsModalOpen(false);
-    setIsSuccessOpen(true);
-  };
-
-  const handleCloseSuccess = () => {
-    setIsSuccessOpen(false);
-  };
-
-  const handleFilterClick = () => {
-    setIsFilterOpen(true);
-  };
-
-  const handleFilterChange = (newFilters) => {
-    setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }));
-  };
 
   return (
     <div className="booking-page">
@@ -231,7 +200,7 @@ function BookingPage() {
           <RoomCard
             key={room.id}
             room={room}
-            onBook={() => handleBookClick(room.id)}
+            onBook={() => handleBookClick(room)}
             onToggleFavorite={handleToggleFavorite}
           />
         ))}
@@ -241,6 +210,7 @@ function BookingPage() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveBooking}
+        selectedRoom={selectedRoom}
       />
 
       <BookingSuccessModal
