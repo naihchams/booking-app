@@ -46,10 +46,7 @@ function BookingPage() {
             location: system.map_id || "Default Location",
             capacity: system.capacity,
             favourite: false,
-            imageUrl:
-              system.images?.[0] || system.name.contains("accelerate")
-                ? ACCELERATE_IMAGE
-                : "",
+            imageUrl: system.images?.[0] || ACCELERATE_IMAGE,
             availability: [],
             booked: false,
             zones: system.zones || [],
@@ -74,6 +71,8 @@ function BookingPage() {
             periodStart,
             periodEnd
           );
+
+          console.log(availabilityData);
           setRooms((prevRooms) =>
             prevRooms.map((room) => {
               const isBooked = availabilityData.find(
