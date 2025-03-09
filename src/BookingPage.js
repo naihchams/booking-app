@@ -67,20 +67,17 @@ function BookingPage() {
         const periodEnd = periodStart + 30 * 60;
 
         try {
-          const availabilityData = await fetchAvailibily(
-            periodStart,
-            periodEnd
-          );
-
-          console.log(availabilityData);
-          setRooms((prevRooms) =>
-            prevRooms.map((room) => {
-              const isBooked = availabilityData.find(
-                (entry) => entry.system_id === room.id
+          const updatedRooms = await Promise.all(
+            rooms.map(async (room) => {
+              const availabilityData = await fetchAvailibily(
+                periodStart,
+                periodEnd,
+                room.id
               );
-              return { ...room, booked: !!isBooked };
+              return { ...room, booked: availabilityData.booked };
             })
           );
+          setRooms(updatedRooms);
         } catch (error) {
           console.error("Error checking availability", error);
         }
