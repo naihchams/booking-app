@@ -33,7 +33,7 @@
   align-items: center;
   margin-bottom: 12px;
   font-size: 14px;
-  color: #333;
+  color: #212245;
 }
 
 .checkbox-row input {
@@ -43,7 +43,7 @@
 .back-button {
   display: block;
   margin: 24px auto 0 auto; 
-  background-color: #001c6e;
+  background-color: #212245;
   color: #fff;
   border: none;
   padding: 12px 32px;
@@ -107,5 +107,9 @@
   margin-right: 0.5rem;
   transform: scale(1.2); 
   cursor: pointer;
+  accent-color: #212245;
 }
 
+input[type="radio"] {
+  accent-color: #212245;
+}

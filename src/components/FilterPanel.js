@@ -54,13 +54,12 @@ function FilterPanel({ handleFilterClick, onFilterChange }) {
 
   return (
     <div className="filter-panel">
-      <div className="filter-button-row">
-        <button className="filter-button" onClick={handleFilterClick}>
-          Filter <FaChevronDown className="filter-icon" />
-        </button>
-      </div>
-
       <div className="dropdown-row">
+        <div className="filter-button-row">
+          <button className="filter-button" onClick={handleFilterClick}>
+            Filters <FaChevronDown className="filter-icon" />
+          </button>
+        </div>
         <div className="dropdown-group">
           <label htmlFor="date-dropdown">Date:</label>
           <select
