@@ -31,6 +31,14 @@ function FilterModal({
   if (!isOpen) return null;
 
   const handleOverlayClick = () => {
+    onClose();
+  };
+
+  const handleContentClick = (e) => {
+    e.stopPropagation();
+  };
+
+  const handleBackClick = () => {
     const newFilters = {
       roomSize,
       onlyFavourites,
@@ -43,14 +51,6 @@ function FilterModal({
     if (onSave) {
       onSave(newFilters);
     }
-    onClose();
-  };
-
-  const handleContentClick = (e) => {
-    e.stopPropagation();
-  };
-
-  const handleBackClick = () => {
     onClose();
   };
 
@@ -142,7 +142,7 @@ function FilterModal({
         </label>
 
         <button className="back-button" onClick={handleBackClick}>
-          Back
+          Apply Filters
         </button>
       </div>
     </div>
