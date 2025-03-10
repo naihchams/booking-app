@@ -1,14 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import "./NewBookingModal.css";
 
-function NewBookingModal({ isOpen, onClose, onSave }) {
-  const [title, setTitle] = useState("Workshop Meeting");
-  const [space, setSpace] = useState("Accelerate");
-  const [date, setDate] = useState("2025-02-22T14:00");
-  const [duration, setDuration] = useState("30");
+function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
+  const [title, setTitle] = useState("");
+  const [space, setSpace] = useState("");
 
-  const handleSave = () => {
-    const newBooking = { title, space, date, duration };
+  const getCurrentDateTime = () => {
+    const now = new Date();
+    now.setSeconds(0, 0);
+    return now;
+  };
+
+  const [startDate, setStartDate] = useState(getCurrentDateTime());
+  const [endDate, setEndDate] = useState(() => {
+    const d = getCurrentDateTime();
+    d.setMinutes(d.getMinutes() + 30);
+    return d;
+  });
+
+  const [duration, setDuration] = useState(30);
+
+  useEffect(() => {
+    if (selectedRoom) {
+      setTitle(`Booking for ${selectedRoom.name}`);
+      setSpace(selectedRoom.name);
+    }
+  }, [selectedRoom]);
+
+  useEffect(() => {
+    const newEnd = new Date(startDate);
+    newEnd.setMinutes(startDate.getMinutes() + duration);
+    setEndDate(newEnd);
+  }, [startDate, duration]);
+
+  const handleEndTimeChange = (timeOnlyDate) => {
+    const newEnd = new Date(startDate);
+    newEnd.setHours(timeOnlyDate.getHours());
+    newEnd.setMinutes(timeOnlyDate.getMinutes());
+
+    setEndDate(newEnd);
+
+    const diffMs = newEnd - startDate;
+    const diffMins = Math.round(diffMs / 60000);
+    setDuration(diffMins);
+  };
+
+  const handleSave = (e) => {
+    e.preventDefault();
+    const newBooking = {
+      title,
+      space,
+      date: startDate.toISOString().slice(0, 16),
+      duration,
+      system_id: selectedRoom?.id,
+    };
     onSave(newBooking);
     onClose();
   };
@@ -50,22 +97,29 @@ function NewBookingModal({ isOpen, onClose, onSave }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="dateTime">Date</label>
-              <input
-                id="dateTime"
-                type="datetime-local"
-                value={date}
-                onChange={(e) => setDate(e.target.value)}
+              <label htmlFor="startDate">Date</label>
+              <DatePicker
+                id="startDate"
+                selected={startDate}
+                onChange={(selectedDate) => setStartDate(selectedDate)}
+                showTimeSelect
+                timeIntervals={15}
+                dateFormat="MMM d, yyyy 'at' h:mm aa"
+                className="date-picker-input"
               />
             </div>
 
             <div className="form-group">
-              <label htmlFor="duration">Duration (minutes)</label>
-              <input
-                id="duration"
-                type="number"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+              <label htmlFor="endTime">Duration</label>
+              <DatePicker
+                id="endTime"
+                selected={endDate}
+                onChange={handleEndTimeChange}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                dateFormat={`h:mm aa '(${duration} minutes)'`}
+                className="date-picker-input"
               />
             </div>
           </div>

@@ -58,7 +58,7 @@
   }
   
   .book-button {
-    background-color: #001c6e;
+    background-color: #212245;
     color: #fff;
   }
   
@@ -74,5 +74,9 @@
     font-size: 20px;
     color: #999;
     cursor: pointer;
+  }
+  
+  .favorited {
+    color: #212245;
   }
   
