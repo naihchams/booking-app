@@ -228,14 +228,6 @@ function BookingPage() {
             width={"200px"}
           />
         </div>
-        <div className="header-right">
-          <img
-            src={logoPlaceOs}
-            alt="Right Logo"
-            className="right-logo"
-            width={"100px"}
-          />
-        </div>
       </header>
 
       <div className="content-area">
