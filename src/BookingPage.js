@@ -8,8 +8,6 @@ import NewBookingModal from "./components/NewBookingModal";
 import BookingSuccessModal from "./components/BookingSuccessModal";
 import FilterModal from "./components/FilterModal";
 import { fetchSystems } from "./api/systemApi";
-// import { fetchPlaces } from "./api/placeApi";
-import { fetchEvents } from "./api/eventApi";
 import { fetchAvailibily } from "./api/availabilityApi";
 import { createEvent } from "./api/eventApi";
 
@@ -138,14 +136,6 @@ function BookingPage() {
     checkAvailability();
   }, [filters.date, filters.time, rooms]);
 
-  const floors = [
-    ...new Set(
-      rooms
-        .map((room) => room.location)
-        .filter((location) => location !== undefined)
-    ),
-  ];
-
   const handleToggleFavorite = (roomId) => {
     setRooms((prevRooms) =>
       prevRooms.map((room) =>
@@ -173,7 +163,7 @@ function BookingPage() {
     };
 
     try {
-      const createdEvent = await createEvent(newEventData);
+      await createEvent(newEventData);
       setIsModalOpen(false);
       setIsSuccessOpen(true);
     } catch (error) {
@@ -209,8 +199,19 @@ function BookingPage() {
       return false;
     }
 
-    if (filters.floor && room.location !== filters.floor) {
-      return false;
+    if (filters.floor === "DFA") {
+      const nameLower = room.name.toLowerCase();
+      if (!nameLower.includes("s1") && !nameLower.includes("s2")) {
+        return false;
+      }
+    } else if (filters.floor === "AREA 2071") {
+      const nameLower = room.name.toLowerCase();
+      if (
+        !nameLower.includes("collaborate") &&
+        !nameLower.includes("accelerate")
+      ) {
+        return false;
+      }
     }
 
     return true;
@@ -273,7 +274,6 @@ function BookingPage() {
         onClose={() => setIsFilterOpen(false)}
         onSave={handleFilterChange}
         defaultValues={filters}
-        floors={floors}
       />
     </div>
   );

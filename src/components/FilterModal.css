@@ -4,61 +4,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 10000;
-}
-
-.filter-content {
-  background-color: #fff;
-  width: 90%;
-  max-width: 400px;
-  border-radius: 8px;
-  padding: 24px 16px;
-  position: relative;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-.filter-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin-top: 0;
-  margin-bottom: 12px;
-}
-
-.checkbox-row {
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  font-size: 14px;
-  color: #212245;
-}
-
-.checkbox-row input {
-  margin-right: 8px;
-}
-
-.back-button {
-  display: block;
-  margin: 24px auto 0 auto; 
-  background-color: #212245;
-  color: #fff;
-  border: none;
-  padding: 12px 32px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.filter-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
   background: rgba(0, 0, 0, 0.3);
   display: flex;
   justify-content: center;
@@ -69,47 +14,95 @@
 .filter-content {
   background: #fff;
   width: 90%;
-  max-width: 400px; 
+  max-width: 400px;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   padding: 1.5rem;
+  position: relative;
 }
 
-.filter-content h2 {
-  margin-top: 0; 
-  font-size: 1.2rem;
+.filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.5rem;
-  color: #333; 
 }
 
-.filter-content hr {
+.filter-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #666;
+}
+
+h3 {
+  margin: 0.75rem 0 0.25rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+}
+
+hr {
   border: none;
   border-top: 1px solid #ccc;
-  margin: 1rem 0;
+  margin: 0.75rem 0;
 }
 
 .radio-group,
 .checkbox-row {
   display: flex;
-  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
   margin: 0.5rem 0;
 }
 
 .radio-group label,
 .checkbox-row label {
-  margin-right: 8px;
-  font-size: 13px;
+  font-size: 14px;
   color: #444;
+  cursor: pointer;
 }
 
 .radio-group input[type="radio"],
 .checkbox-row input[type="checkbox"] {
   margin-right: 0.5rem;
-  transform: scale(1.2); 
-  cursor: pointer;
+  transform: scale(1.2);
   accent-color: #212245;
 }
 
-input[type="radio"] {
-  accent-color: #212245;
+.select-level {
+  margin: 0.5rem 0;
+}
+
+.custom-select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  appearance: none;
+  background: #fff url("data:image/svg+xml;utf8,<svg fill='black' height='24' viewBox='0 0 24 24' width='24' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>") no-repeat right 10px center;
+  background-size: 16px;
+  cursor: pointer;
+}
+
+.apply-button {
+  display: block;
+  margin: 1.5rem auto 0;
+  background-color: #212245;
+  color: #fff;
+  border: none;
+  padding: 12px 32px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
 }
