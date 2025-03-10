@@ -105,7 +105,7 @@ function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
                 showTimeSelect
                 timeIntervals={15}
                 dateFormat="MMM d, yyyy 'at' h:mm aa"
-                className="date-picker-input"
+                className="date-picker-input start-date-picker"
               />
             </div>
 

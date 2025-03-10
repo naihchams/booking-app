@@ -2,6 +2,8 @@
   "name": "booking-app",
   "version": "0.1.0",
   "private": true,
+  "main": "main.js",
+  "bin": "App.js",
   "proxy": "https://smartoffice.dubaifuture.ae",
   "dependencies": {
     "@azure/msal-browser": "^4.5.1",
@@ -24,6 +26,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "electron": "electron .",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -47,6 +50,8 @@
     ]
   },
   "devDependencies": {
-    "@nrwl/node": "^19.8.4"
+    "@nrwl/node": "^19.8.4",
+    "electron": "^35.0.1",
+    "electron-packager": "^17.1.2"
   }
 }

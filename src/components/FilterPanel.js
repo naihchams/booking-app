@@ -70,7 +70,7 @@ function FilterPanel({ handleFilterClick, onFilterChange }) {
           >
             <option value="">Select Date</option>
             {dateOptions.map((date) => (
-              <option key={date} value={date}>
+              <option key={date} value={date} style={{ width: 300 }}>
                 {date}
               </option>
             ))}

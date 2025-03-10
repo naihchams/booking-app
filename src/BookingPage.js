@@ -232,6 +232,14 @@ function BookingPage() {
             width={"200px"}
           />
         </div>
+        <div className="header-right">
+          <img
+            src={logoPlaceOs}
+            alt="Left Logo"
+            className="left-logo"
+            width={"200px"}
+          />
+        </div>
       </header>
 
       <div className="content-area">
