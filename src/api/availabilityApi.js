@@ -13,7 +13,6 @@ export const fetchAvailibily = async (periodStart, periodEnd, roomId) => {
 
     const response = await axios.get(url, config);
 
-    console.log(response.data);
     return response.data;
   } catch (error) {
     console.error("Error fetching events:", error);

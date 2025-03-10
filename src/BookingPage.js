@@ -65,7 +65,6 @@ function BookingPage() {
         const dateTimeStr = `${filters.date}T${filters.time}:00`;
         const periodStart = Math.floor(new Date(dateTimeStr).getTime() / 1000);
         const periodEnd = periodStart + 30 * 60;
-
         try {
           const updatedRooms = await Promise.all(
             rooms.map(async (room) => {
@@ -74,7 +73,59 @@ function BookingPage() {
                 periodEnd,
                 room.id
               );
-              return { ...room, booked: availabilityData.booked };
+              const available = availabilityData && availabilityData.length > 0;
+              return { ...room, booked: !available };
+            })
+          );
+          setRooms(updatedRooms);
+        } catch (error) {
+          console.error("Error checking availability", error);
+        }
+      } else if (filters.date && !filters.time) {
+        const dayStart = new Date(filters.date);
+        dayStart.setHours(0, 0, 0, 0);
+        const periodStart = Math.floor(dayStart.getTime() / 1000);
+        const periodEnd = periodStart + 24 * 60 * 60;
+        try {
+          const updatedRooms = await Promise.all(
+            rooms.map(async (room) => {
+              const availabilityData = await fetchAvailibily(
+                periodStart,
+                periodEnd,
+                room.id
+              );
+              const available = availabilityData && availabilityData.length > 0;
+              return { ...room, booked: !available };
+            })
+          );
+          setRooms(updatedRooms);
+        } catch (error) {
+          console.error("Error checking availability", error);
+        }
+      } else if (!filters.date && filters.time) {
+        const daysToCheck = 7;
+        try {
+          const updatedRooms = await Promise.all(
+            rooms.map(async (room) => {
+              let available = false;
+              for (let i = 0; i < daysToCheck; i++) {
+                const date = new Date();
+                date.setDate(date.getDate() + i);
+                const [hours, minutes] = filters.time.split(":");
+                date.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
+                const periodStart = Math.floor(date.getTime() / 1000);
+                const periodEnd = periodStart + 30 * 60;
+                const availabilityData = await fetchAvailibily(
+                  periodStart,
+                  periodEnd,
+                  room.id
+                );
+                if (availabilityData && availabilityData.length > 0) {
+                  available = true;
+                  break;
+                }
+              }
+              return { ...room, booked: !available };
             })
           );
           setRooms(updatedRooms);
@@ -83,8 +134,9 @@ function BookingPage() {
         }
       }
     }
+
     checkAvailability();
-  }, [filters.date, filters.time]);
+  }, [filters.date, filters.time, rooms]);
 
   const floors = [
     ...new Set(
@@ -142,8 +194,6 @@ function BookingPage() {
   };
 
   const filteredRooms = rooms.filter((room) => {
-    if (room.booked) return false;
-
     if (
       searchQuery &&
       !room.name.toLowerCase().includes(searchQuery.toLowerCase())
