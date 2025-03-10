@@ -1,48 +1,15 @@
 import React, { useState, useEffect } from "react";
 import "./FilterModal.css";
 
-function FilterModal({
-  isOpen,
-  onClose,
-  onSave,
-  defaultValues = {},
-  floors = [],
-}) {
+function FilterModal({ isOpen, onClose, onSave, defaultValues = {} }) {
   const [roomSize, setRoomSize] = useState("");
   const [onlyFavourites, setOnlyFavourites] = useState(false);
-  const [sRoom, setSRoom] = useState(false);
-  const [collaborateRoom, setCollaborateRoom] = useState(false);
-  const [accelerateRoom, setAccelerateRoom] = useState(false);
   const [meetingRoom, setMeetingRoom] = useState(false);
   const [floor, setFloor] = useState("");
-
-  useEffect(() => {
-    if (isOpen) {
-      setRoomSize(defaultValues.roomSize || "");
-      setOnlyFavourites(defaultValues.onlyFavourites || false);
-      setSRoom(defaultValues.sRoom || false);
-      setCollaborateRoom(defaultValues.collaborateRoom || false);
-      setAccelerateRoom(defaultValues.accelerateRoom || false);
-      setMeetingRoom(defaultValues.meetingRoom || false);
-      setFloor(defaultValues.floor || "");
-    }
-  }, [isOpen]);
 
   if (!isOpen) return null;
 
   const handleOverlayClick = () => {
-    const newFilters = {
-      roomSize,
-      onlyFavourites,
-      sRoom,
-      collaborateRoom,
-      accelerateRoom,
-      meetingRoom,
-      floor,
-    };
-    if (onSave) {
-      onSave(newFilters);
-    }
     onClose();
   };
 
@@ -50,40 +17,30 @@ function FilterModal({
     e.stopPropagation();
   };
 
-  const handleBackClick = () => {
+  const handleApplyClick = () => {
+    const newFilters = {
+      roomSize,
+      onlyFavourites,
+      meetingRoom,
+      floor,
+    };
+    onSave?.(newFilters);
     onClose();
   };
 
   return (
     <div className="filter-overlay" onClick={handleOverlayClick}>
       <div className="filter-content" onClick={handleContentClick}>
-        <h2>Floor</h2>
-        <div className="radio-group">
-          <label>
-            <input
-              type="radio"
-              name="floor"
-              value=""
-              checked={floor === ""}
-              onChange={() => setFloor("")}
-            />
-            All Floors
-          </label>
-          {floors.map((floorOption) => (
-            <label key={floorOption}>
-              <input
-                type="radio"
-                name="floor"
-                value={floorOption}
-                checked={floor === floorOption}
-                onChange={() => setFloor(floorOption)}
-              />
-              {floorOption.toUpperCase()}
-            </label>
-          ))}
+        <div className="filter-header">
+          <h2>Filters</h2>
+          <button className="close-button" onClick={onClose}>
+            &times;
+          </button>
         </div>
+
         <hr />
-        <h2>Select room size</h2>
+
+        <h3>Select room size</h3>
         <div className="radio-group">
           <label>
             <input
@@ -119,30 +76,32 @@ function FilterModal({
 
         <hr />
 
-        <h2>Favourites</h2>
+        <h3>Level</h3>
+        <div className="select-level">
+          <select
+            value={floor}
+            onChange={(e) => setFloor(e.target.value)}
+            className="custom-select"
+          >
+            <option value="">All levels</option>
+            <option value="AREA 2071">Area 2071</option>
+            <option value="DFA">DFA</option>
+          </select>
+        </div>
+
+        <hr />
+
         <label className="checkbox-row">
           <input
             type="checkbox"
             checked={onlyFavourites}
             onChange={() => setOnlyFavourites(!onlyFavourites)}
           />
-          Only show favourite rooms
+          Favorites
         </label>
 
-        <hr />
-
-        <h2>Facilities</h2>
-        <label className="checkbox-row">
-          <input
-            type="checkbox"
-            checked={meetingRoom}
-            onChange={() => setMeetingRoom(!meetingRoom)}
-          />
-          Meeting Room
-        </label>
-
-        <button className="back-button" onClick={handleBackClick}>
-          Back
+        <button className="apply-button" onClick={handleApplyClick}>
+          Apply Filters
         </button>
       </div>
     </div>
