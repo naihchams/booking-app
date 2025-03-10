@@ -41,7 +41,11 @@ function BookingPage() {
             id: system.id,
             email: system.email,
             name: system.display_name || system.name,
-            location: system.map_id || "Default Location",
+            location:
+              system.name == "Accelerate"
+                ? "Area 2071"
+                : (system.name == "Collaborate" ? "Area 2071" : "DFA") ||
+                  "Default Location",
             capacity: system.capacity,
             favourite: false,
             imageUrl: system.images?.[0] || ACCELERATE_IMAGE,
