@@ -13,8 +13,14 @@ function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
     return now;
   };
 
-  const [date, setDate] = useState(getCurrentDateTime());
-  const [duration, setDuration] = useState("30");
+  const [startDate, setStartDate] = useState(getCurrentDateTime());
+  const [endDate, setEndDate] = useState(() => {
+    const d = getCurrentDateTime();
+    d.setMinutes(d.getMinutes() + 30);
+    return d;
+  });
+
+  const [duration, setDuration] = useState(30);
 
   useEffect(() => {
     if (selectedRoom) {
@@ -23,14 +29,32 @@ function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
     }
   }, [selectedRoom]);
 
+  useEffect(() => {
+    const newEnd = new Date(startDate);
+    newEnd.setMinutes(startDate.getMinutes() + duration);
+    setEndDate(newEnd);
+  }, [startDate, duration]);
+
+  const handleEndTimeChange = (timeOnlyDate) => {
+    const newEnd = new Date(startDate);
+    newEnd.setHours(timeOnlyDate.getHours());
+    newEnd.setMinutes(timeOnlyDate.getMinutes());
+
+    setEndDate(newEnd);
+
+    const diffMs = newEnd - startDate;
+    const diffMins = Math.round(diffMs / 60000);
+    setDuration(diffMins);
+  };
+
   const handleSave = (e) => {
     e.preventDefault();
     const newBooking = {
       title,
       space,
-      date: date.toISOString().slice(0, 16),
+      date: startDate.toISOString().slice(0, 16),
       duration,
-      system_id: selectedRoom ? selectedRoom.id : undefined,
+      system_id: selectedRoom?.id,
     };
     onSave(newBooking);
     onClose();
@@ -73,11 +97,11 @@ function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="dateTime">Date</label>
+              <label htmlFor="startDate">Date</label>
               <DatePicker
-                id="dateTime"
-                selected={date}
-                onChange={(selectedDate) => setDate(selectedDate)}
+                id="startDate"
+                selected={startDate}
+                onChange={(selectedDate) => setStartDate(selectedDate)}
                 showTimeSelect
                 timeIntervals={15}
                 dateFormat="MMM d, yyyy 'at' h:mm aa"
@@ -86,12 +110,16 @@ function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
             </div>
 
             <div className="form-group">
-              <label htmlFor="duration">Duration (minutes)</label>
-              <input
-                id="duration"
-                type="number"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
+              <label htmlFor="endTime">Duration</label>
+              <DatePicker
+                id="endTime"
+                selected={endDate}
+                onChange={handleEndTimeChange}
+                showTimeSelect
+                showTimeSelectOnly
+                timeIntervals={15}
+                dateFormat={`h:mm aa '(${duration} minutes)'`}
+                className="date-picker-input"
               />
             </div>
           </div>
