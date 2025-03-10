@@ -27,7 +27,6 @@ export const createEvent = async (eventData) => {
         "Content-Type": "application/json",
       },
     });
-    console.log(response);
     return response.data;
   } catch (error) {
     console.error(
