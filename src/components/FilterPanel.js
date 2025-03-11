@@ -1,28 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, forwardRef } from "react";
+import DatePicker from "react-datepicker";
 import { FaChevronDown } from "react-icons/fa";
+import "react-datepicker/dist/react-datepicker.css";
 import "./FilterPanel.css";
 
 function FilterPanel({ handleFilterClick, onFilterChange }) {
-  const [selectedDate, setSelectedDate] = useState("");
+  const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState("");
 
   useEffect(() => {
-    onFilterChange({ date: selectedDate, time: selectedTime });
-  }, [selectedDate, selectedTime, onFilterChange]);
+    const formattedDate = selectedDate
+      ? selectedDate.toISOString().split("T")[0]
+      : "";
 
-  const getDateOptions = () => {
-    const dates = [];
-    const today = new Date();
-    for (let i = 0; i <= 10; i++) {
-      const date = new Date();
-      date.setDate(today.getDate() + i);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      dates.push(`${year}-${month}-${day}`);
-    }
-    return dates;
-  };
+    onFilterChange({ date: formattedDate, time: selectedTime });
+  }, [selectedDate, selectedTime, onFilterChange]);
 
   const getTimeOptions = () => {
     const times = [];
@@ -41,16 +33,22 @@ function FilterPanel({ handleFilterClick, onFilterChange }) {
     return times;
   };
 
-  const dateOptions = getDateOptions();
   const timeOptions = getTimeOptions();
 
-  const handleDateChange = (e) => {
-    setSelectedDate(e.target.value);
+  const handleDateChange = (date) => {
+    setSelectedDate(date);
   };
 
   const handleTimeChange = (e) => {
     setSelectedTime(e.target.value);
   };
+
+  const CustomDateInput = forwardRef(({ value, onClick }, ref) => (
+    <button className="dropdown date-picker-input" onClick={onClick} ref={ref}>
+      {value || "Select Date"}
+      <FaChevronDown className="dropdown-icon" style={{ marginLeft: 5 }} />
+    </button>
+  ));
 
   return (
     <div className="filter-panel">
@@ -60,21 +58,17 @@ function FilterPanel({ handleFilterClick, onFilterChange }) {
             Filters <FaChevronDown className="filter-icon" />
           </button>
         </div>
+
         <div className="dropdown-group">
-          <label htmlFor="date-dropdown">Date:</label>
-          <select
-            id="date-dropdown"
-            className="dropdown"
-            value={selectedDate}
+          <label htmlFor="date-input">Date:</label>
+          <DatePicker
+            id="date-input"
+            selected={selectedDate}
             onChange={handleDateChange}
-          >
-            <option value="">Select Date</option>
-            {dateOptions.map((date) => (
-              <option key={date} value={date} style={{ width: 300 }}>
-                {date}
-              </option>
-            ))}
-          </select>
+            placeholderText="Select a date"
+            dateFormat="MMM d, yyyy"
+            customInput={<CustomDateInput />}
+          />
         </div>
 
         <div className="dropdown-group">

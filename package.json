@@ -1,5 +1,7 @@
 {
   "name": "booking-app",
+  "description": "A booking app built with React and Electron",
+  "author": "Nai Hamdan",
   "version": "0.1.0",
   "private": true,
   "main": "main.js",
@@ -17,7 +19,7 @@
     "axios": "^1.8.2",
     "date-fns": "^4.1.0",
     "react": "^18.2.0",
-    "react-datepicker": "^8.1.0",
+    "react-datepicker": "^8.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
     "react-router-dom": "^6.30.0",
@@ -27,9 +29,27 @@
   "scripts": {
     "start": "react-scripts start",
     "electron": "electron .",
-    "build": "react-scripts build",
+    "dist": "electron-builder",
+    "build": "react-scripts build && electron-builder",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "electron-builder": "electron-builder"
+  },
+  "build": {
+    "appId": "com.yourname.bookingapp",
+    "productName": "Booking App",
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "files": [
+      "**/*",
+      "build/**/*",
+      "public/electron.js"
+    ],
+    "dmg": {
+      "background": "build/dmg-background.png",
+      "icon": "build/icon.icns"
+    }
   },
   "eslintConfig": {
     "extends": [
@@ -52,6 +72,7 @@
   "devDependencies": {
     "@nrwl/node": "^19.8.4",
     "electron": "^35.0.1",
+    "electron-builder": "^25.1.8",
     "electron-packager": "^17.1.2"
   }
 }

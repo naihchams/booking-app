@@ -6,6 +6,12 @@
     width: 100%;
     max-width: 400px; 
   }
+
+  .date-picker-input {
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+  }
   
   .filter-button-row {
     margin-top: 15px;

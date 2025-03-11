@@ -1,0 +1,20 @@
+directories:
+  output: dist
+  buildResources: assets
+files:
+  - filter:
+      - build/**/*
+      - '**/*'
+      - build/**/*
+      - public/electron.js
+extraMetadata:
+  main: build/electron.js
+appId: com.yourname.bookingapp
+productName: Booking App
+mac:
+  category: public.app-category.productivity
+dmg:
+  background: build/dmg-background.png
+  icon: build/icon.icns
+extends: react-cra
+electronVersion: 35.0.1
