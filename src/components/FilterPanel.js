@@ -5,14 +5,35 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./FilterPanel.css";
 
 function FilterPanel({ handleFilterClick, onFilterChange }) {
+  const getDefaultTime = () => {
+    const now = new Date();
+    let hours = now.getHours();
+    let minutes = now.getMinutes();
+    if (minutes % 15 === 0) {
+      return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+        2,
+        "0"
+      )}`;
+    } else {
+      let nextMinutes = Math.floor(minutes / 15) * 15 + 15;
+      if (nextMinutes >= 60) {
+        nextMinutes = 0;
+        hours = (hours + 1) % 24;
+      }
+      return `${String(hours).padStart(2, "0")}:${String(nextMinutes).padStart(
+        2,
+        "0"
+      )}`;
+    }
+  };
+
   const [selectedDate, setSelectedDate] = useState(new Date());
-  const [selectedTime, setSelectedTime] = useState("");
+  const [selectedTime, setSelectedTime] = useState(getDefaultTime());
 
   useEffect(() => {
     const formattedDate = selectedDate
       ? selectedDate.toISOString().split("T")[0]
       : "";
-
     onFilterChange({ date: formattedDate, time: selectedTime });
   }, [selectedDate, selectedTime, onFilterChange]);
 
