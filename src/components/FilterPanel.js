@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import "./FilterPanel.css";
 
 function FilterPanel({ handleFilterClick, onFilterChange }) {
-  const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedTime, setSelectedTime] = useState("");
 
   useEffect(() => {
