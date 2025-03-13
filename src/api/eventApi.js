@@ -25,28 +25,25 @@ export const fetchEvents = async (periodStart, periodEnd, zoneIds) => {
 
 export const createEvent = async (eventData) => {
   try {
+    // Ensure event start and end are treated as local times based on the user's timezone
     if (eventData.start) {
-      eventData.start = format(
-        new Date(eventData.start),
-        "yyyy-MM-dd'T'HH:mm:ssXXX",
-        { timeZone: userTimeZone }
-      );
+      const localStart = new Date(eventData.start).toLocaleString("en-US", { timeZone: userTimeZone });
+      eventData.start = format(new Date(localStart), "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone: userTimeZone });
     }
 
     if (eventData.end) {
-      eventData.end = format(
-        new Date(eventData.end),
-        "yyyy-MM-dd'T'HH:mm:ssXXX",
-        { timeZone: userTimeZone }
-      );
+      const localEnd = new Date(eventData.end).toLocaleString("en-US", { timeZone: userTimeZone });
+      eventData.end = format(new Date(localEnd), "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone: userTimeZone });
     }
 
+    // Sending the eventData to the API
     const response = await axios.post(EVENTS_API_URL, eventData, {
       headers: {
         "X-API-KEY": API_KEY,
         "Content-Type": "application/json",
       },
     });
+
     return response.data;
   } catch (error) {
     console.error(
