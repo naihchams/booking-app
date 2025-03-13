@@ -27,13 +27,19 @@ export const createEvent = async (eventData) => {
   try {
     // Ensure event start and end are treated as local times based on the user's timezone
     if (eventData.start) {
-      const localStart = new Date(eventData.start).toLocaleString("en-US", { timeZone: userTimeZone });
-      eventData.start = format(new Date(localStart), "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone: userTimeZone });
+      eventData.start = format(
+        new Date(eventData.start), // Use the raw date for conversion
+        "yyyy-MM-dd'T'HH:mm:ssXXX",
+        { timeZone: userTimeZone }
+      );
     }
 
     if (eventData.end) {
-      const localEnd = new Date(eventData.end).toLocaleString("en-US", { timeZone: userTimeZone });
-      eventData.end = format(new Date(localEnd), "yyyy-MM-dd'T'HH:mm:ssXXX", { timeZone: userTimeZone });
+      eventData.end = format(
+        new Date(eventData.end), // Use the raw date for conversion
+        "yyyy-MM-dd'T'HH:mm:ssXXX",
+        { timeZone: userTimeZone }
+      );
     }
 
     // Sending the eventData to the API
