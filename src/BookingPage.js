@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import "./BookingPage.css";
 import logoPlaceOs from "./assets/KJTech.png";
 import logoDff from "./assets/dff_logo.png";
@@ -138,7 +138,7 @@ function BookingPage() {
     }
 
     checkAvailability();
-  }, [filters.date, filters.time, rooms]);
+  }, [filters.date, filters.time]);
 
   const handleToggleFavorite = (roomId) => {
     setRooms((prevRooms) =>
@@ -183,9 +183,9 @@ function BookingPage() {
     setIsFilterOpen(true);
   };
 
-  const handleFilterChange = (newFilters) => {
+  const handleFilterChange = useCallback((newFilters) => {
     setFilters((prevFilters) => ({ ...prevFilters, ...newFilters }));
-  };
+  }, []);
 
   const filteredRooms = rooms.filter((room) => {
     if (
