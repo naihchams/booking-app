@@ -89,7 +89,9 @@ function BookingPage() {
         dayStart.setHours(0, 0, 0, 0);
         const dateTimeStr = `${filters.date}T${filters.time}:00`;
         const periodStart = Math.floor(
-          DateTime.fromISO(dateTimeStr, { zone: "Asia/Dubai" }).toUTC().toSeconds()
+          DateTime.fromISO(dateTimeStr, { zone: "Asia/Dubai" })
+            .toUTC()
+            .toSeconds()
         );
         const periodEnd = periodStart + 24 * 60 * 60;
         try {
@@ -120,7 +122,11 @@ function BookingPage() {
                 const [hours, minutes] = filters.time.split(":");
                 date.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
                 const dateTimeStr = `${filters.date}T${filters.time}:00`;
-                const periodStart = DateTime.fromISO(dateTimeStr, { zone: "Asia/Dubai" }).toUTC().toSeconds()
+                const periodStart = DateTime.fromISO(dateTimeStr, {
+                  zone: "Asia/Dubai",
+                })
+                  .toUTC()
+                  .toSeconds();
                 const periodEnd = periodStart + 30 * 60;
                 const availabilityData = await fetchAvailability(
                   periodStart,
@@ -170,9 +176,15 @@ function BookingPage() {
       all_day: false,
       title: newBooking.title,
     };
-    console.log("HERE"+newEventData.event_start);
+
     try {
       await createEvent(newEventData);
+      setLastBooking({
+        title: newBooking.title,
+        date: newBooking.date,
+        floor: selectedRoom.location,
+        roomName: selectedRoom.name,
+      });
       setIsModalOpen(false);
       setIsSuccessOpen(true);
     } catch (error) {
