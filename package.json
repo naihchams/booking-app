@@ -5,6 +5,7 @@
   "version": "0.1.0",
   "private": true,
   "main": "main.js",
+  "homepage": ".",
   "bin": "App.js",
   "proxy": "https://smartoffice.dubaifuture.ae",
   "dependencies": {
