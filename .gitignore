@@ -23,3 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 .env
+
+
+dist/mac/Electron.app/Contents/Resources/app.asar
