@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const EVENTS_API_URL = process.env.REACT_APP_EVENTS_API_URL;
-const API_KEY = process.env.REACT_APP_SYSTEMS_API_KEY;
+const API_KEY = window.location.pathname.slice(1);
 
 const config = {
   headers: { "X-API-KEY": API_KEY },

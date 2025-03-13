@@ -8,7 +8,7 @@ import NewBookingModal from "./components/NewBookingModal";
 import BookingSuccessModal from "./components/BookingSuccessModal";
 import FilterModal from "./components/FilterModal";
 import { fetchSystems } from "./api/systemApi";
-import { fetchAvailibily } from "./api/availabilityApi";
+import { fetchAvailability } from "./api/availabilityApi";
 import { createEvent } from "./api/eventApi";
 
 const ACCELERATE_IMAGE =
@@ -70,7 +70,7 @@ function BookingPage() {
         try {
           const updatedRooms = await Promise.all(
             rooms.map(async (room) => {
-              const availabilityData = await fetchAvailibily(
+              const availabilityData = await fetchAvailability(
                 periodStart,
                 periodEnd,
                 room.id
@@ -91,7 +91,7 @@ function BookingPage() {
         try {
           const updatedRooms = await Promise.all(
             rooms.map(async (room) => {
-              const availabilityData = await fetchAvailibily(
+              const availabilityData = await fetchAvailability(
                 periodStart,
                 periodEnd,
                 room.id
@@ -117,7 +117,7 @@ function BookingPage() {
                 date.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
                 const periodStart = Math.floor(date.getTime() / 1000);
                 const periodEnd = periodStart + 30 * 60;
-                const availabilityData = await fetchAvailibily(
+                const availabilityData = await fetchAvailability(
                   periodStart,
                   periodEnd,
                   room.id
