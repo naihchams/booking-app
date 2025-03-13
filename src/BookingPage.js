@@ -31,6 +31,7 @@ function BookingPage() {
     floor: "",
   });
   const [searchQuery, setSearchQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     async function loadRooms() {
@@ -177,6 +178,8 @@ function BookingPage() {
       title: newBooking.title,
     };
 
+    setIsLoading(true);
+
     try {
       await createEvent(newEventData);
       setLastBooking({
@@ -189,6 +192,8 @@ function BookingPage() {
       setIsSuccessOpen(true);
     } catch (error) {
       console.error("Error creating event", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -240,6 +245,11 @@ function BookingPage() {
 
   return (
     <div className="booking-page">
+      {isLoading && (
+        <div className="loading-overlay">
+          <div className="spinner" />
+        </div>
+      )}
       <header className="booking-header">
         <div className="header-left">
           <img
