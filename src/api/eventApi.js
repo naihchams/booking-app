@@ -1,5 +1,5 @@
 import axios from "axios";
-import { format } from "date-fns-tz";
+import { DateTime } from "luxon";
 
 const EVENTS_API_URL = process.env.REACT_APP_EVENTS_API_URL;
 const params = new URLSearchParams(window.location.search);
@@ -25,21 +25,20 @@ export const fetchEvents = async (periodStart, periodEnd, zoneIds) => {
 
 export const createEvent = async (eventData) => {
   try {
+    // Debug: Log the original event start and end times
+    console.log("Original event data:", eventData);
+
     // Ensure event start and end are treated as local times based on the user's timezone
     if (eventData.start) {
-      eventData.start = format(
-        new Date(eventData.start), // Use the raw date for conversion
-        "yyyy-MM-dd'T'HH:mm:ssXXX",
-        { timeZone: userTimeZone }
-      );
+      eventData.start = DateTime.fromMillis(eventData.start)
+        .setZone(userTimeZone)
+        .toFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
     }
 
     if (eventData.end) {
-      eventData.end = format(
-        new Date(eventData.end), // Use the raw date for conversion
-        "yyyy-MM-dd'T'HH:mm:ssXXX",
-        { timeZone: userTimeZone }
-      );
+      eventData.end = DateTime.fromMillis(eventData.end)
+        .setZone(userTimeZone)
+        .toFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
     }
 
     // Sending the eventData to the API

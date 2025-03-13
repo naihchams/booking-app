@@ -52,7 +52,7 @@ function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
     const newBooking = {
       title,
       space,
-      date: startDate.toISOString().slice(0, 16),
+      date: startDate.toLocaleString(),
       duration,
       system_id: selectedRoom?.id,
     };

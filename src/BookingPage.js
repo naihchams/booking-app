@@ -10,6 +10,7 @@ import FilterModal from "./components/FilterModal";
 import { fetchSystems } from "./api/systemApi";
 import { fetchAvailability } from "./api/availabilityApi";
 import { createEvent } from "./api/eventApi";
+import { DateTime } from "luxon";
 
 const ACCELERATE_IMAGE =
   "https://kjtech-lab-bucket.s3.me-central-1.amazonaws.com/Accelerate.jpeg";
@@ -86,7 +87,10 @@ function BookingPage() {
       } else if (filters.date && !filters.time) {
         const dayStart = new Date(filters.date);
         dayStart.setHours(0, 0, 0, 0);
-        const periodStart = Math.floor(dayStart.getTime() / 1000);
+        const dateTimeStr = `${filters.date}T${filters.time}:00`;
+        const periodStart = Math.floor(
+          DateTime.fromISO(dateTimeStr, { zone: "Asia/Dubai" }).toUTC().toSeconds()
+        );
         const periodEnd = periodStart + 24 * 60 * 60;
         try {
           const updatedRooms = await Promise.all(
@@ -115,7 +119,8 @@ function BookingPage() {
                 date.setDate(date.getDate() + i);
                 const [hours, minutes] = filters.time.split(":");
                 date.setHours(parseInt(hours, 10), parseInt(minutes, 10), 0, 0);
-                const periodStart = Math.floor(date.getTime() / 1000);
+                const dateTimeStr = `${filters.date}T${filters.time}:00`;
+                const periodStart = DateTime.fromISO(dateTimeStr, { zone: "Asia/Dubai" }).toUTC().toSeconds()
                 const periodEnd = periodStart + 30 * 60;
                 const availabilityData = await fetchAvailability(
                   periodStart,
@@ -165,7 +170,7 @@ function BookingPage() {
       all_day: false,
       title: newBooking.title,
     };
-
+    console.log("HERE"+newEventData.event_start);
     try {
       await createEvent(newEventData);
       setIsModalOpen(false);
