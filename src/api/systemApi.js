@@ -1,7 +1,8 @@
 import axios from "axios";
 
 const SYSTEMS_API_URL = process.env.REACT_APP_SYSTEMS_API_URL;
-const API_KEY = window.location.pathname.slice(1);
+const params = new URLSearchParams(window.location.search);
+const API_KEY = params.get("apikey");
 
 const config = {
   headers: { "X-API-KEY": API_KEY },

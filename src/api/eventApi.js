@@ -1,7 +1,11 @@
 import axios from "axios";
+import { format } from "date-fns-tz";
 
 const EVENTS_API_URL = process.env.REACT_APP_EVENTS_API_URL;
-const API_KEY = window.location.pathname.slice(1);
+const params = new URLSearchParams(window.location.search);
+const API_KEY = params.get("apikey");
+
+const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
 const config = {
   headers: { "X-API-KEY": API_KEY },
@@ -21,6 +25,20 @@ export const fetchEvents = async (periodStart, periodEnd, zoneIds) => {
 
 export const createEvent = async (eventData) => {
   try {
+    if (eventData.start) {
+      eventData.start = format(
+        new Date(eventData.start),
+        "yyyy-MM-dd'T'HH:mm:ssXXX",
+        { timeZone: userTimeZone }
+      );
+    }
+    if (eventData.end) {
+      eventData.end = format(
+        new Date(eventData.end),
+        "yyyy-MM-dd'T'HH:mm:ssXXX",
+        { timeZone: userTimeZone }
+      );
+    }
     const response = await axios.post(EVENTS_API_URL, eventData, {
       headers: {
         "X-API-KEY": API_KEY,
