@@ -13,7 +13,7 @@ function BookingSuccessModal({ isOpen, onClose, bookingDetails }) {
     const bookingDate = new Date(date);
     formattedDate = bookingDate
       .toLocaleDateString("en-US", {
-        month: "short",
+        month: "long",
         day: "numeric",
         year: "numeric",
       })
