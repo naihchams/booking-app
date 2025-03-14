@@ -32,6 +32,7 @@ function BookingPage() {
   });
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [availability, setAvailability] = useState([]);
 
   useEffect(() => {
     async function loadRooms() {
@@ -66,18 +67,29 @@ function BookingPage() {
   useEffect(() => {
     async function checkAvailability() {
       if (filters.date && filters.time) {
-        const dateTimeStr = `${filters.date}T${filters.time}:00`;
-        const periodStart = Math.floor(new Date(dateTimeStr).getTime() / 1000);
-        const periodEnd = periodStart + 30 * 60;
+        const roundTo30Min = (timeStr) => {
+          let [hours, minutes] = timeStr.split(":").map(Number);
+          minutes = minutes < 30 ? 0 : 30;
+          return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      };
+      
+      const dateTimeStr = `${filters.date}T${roundTo30Min(filters.time)}:00`;
+      const periodStart = Math.floor(new Date(dateTimeStr).getTime() / 1000);
+      const periodEnd = periodStart + 30 * 60;
         try {
+          console.log("1-Fetching availability for:");
+          console.log("Start:", new Date(periodStart * 1000).toLocaleString());
+          console.log("End:", new Date(periodEnd * 1000).toLocaleString());
           const updatedRooms = await Promise.all(
             rooms.map(async (room) => {
+              setAvailability([]);
               const availabilityData = await fetchAvailability(
                 periodStart,
                 periodEnd,
                 room.id
               );
               const available = availabilityData && availabilityData.length > 0;
+              console.log("API Response (Booked Slots):", availabilityData);
               return { ...room, booked: !available };
             })
           );
@@ -98,6 +110,7 @@ function BookingPage() {
         try {
           const updatedRooms = await Promise.all(
             rooms.map(async (room) => {
+              setAvailability([]);
               const availabilityData = await fetchAvailability(
                 periodStart,
                 periodEnd,
@@ -129,6 +142,7 @@ function BookingPage() {
                   .toUTC()
                   .toSeconds();
                 const periodEnd = periodStart + 30 * 60;
+                setAvailability([]);
                 const availabilityData = await fetchAvailability(
                   periodStart,
                   periodEnd,
