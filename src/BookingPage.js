@@ -180,36 +180,65 @@ function BookingPage() {
   };
 
   const handleSaveBooking = async (newBooking) => {
-    const newEventData = {
-      event_start: Math.floor(new Date(newBooking.date).getTime() / 1000),
-      event_end:
-        Math.floor(new Date(newBooking.date).getTime() / 1000) +
-        newBooking.duration * 60,
-      attendees: [],
-      system_id: newBooking.system_id,
-      private: true,
-      all_day: false,
-      title: newBooking.title,
-    };
+    // Check if the newBooking.date has a valid format
+    console.log("Original Booking Date:", newBooking.date);
 
-    setIsLoading(true);
-
-    try {
-      await createEvent(newEventData);
-      setLastBooking({
-        title: newBooking.title,
-        date: newBooking.date,
-        floor: selectedRoom.location,
-        roomName: selectedRoom.name,
-      });
-      setIsModalOpen(false);
-      setIsSuccessOpen(true);
-    } catch (error) {
-      console.error("Error creating event", error);
-    } finally {
-      setIsLoading(false);
+    // Add a fallback log to check for undefined or unexpected formats
+    if (!newBooking.date) {
+        console.error("Booking date is missing or undefined!");
+        return;
     }
-  };
+
+    // Adjusted regular expression to match "DD/MM/YYYY, HH:mm:ss"
+    const dateParts = newBooking.date.match(/(\d{2})\/(\d{2})\/(\d{4}), (\d{2}):(\d{2}):(\d{2})/);
+
+    if (dateParts) {
+        // Extract the components from the matched result
+        const day = dateParts[1];
+        const month = dateParts[2];
+        const year = dateParts[3];
+        const hours = dateParts[4];
+        const minutes = dateParts[5];
+        const seconds = dateParts[6];
+
+        console.log("Parsed Date:", { day, month, year, hours, minutes, seconds });
+
+        // Build the normalized date string in a standard format (ISO format)
+        const normalizedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+        console.log("Normalized Date:", normalizedDate);
+
+        // Now you can safely use the normalized date string to create the event
+        const newEventData = {
+            event_start: Math.floor(new Date(normalizedDate).getTime() / 1000),
+            event_end: Math.floor(new Date(normalizedDate).getTime() / 1000) + newBooking.duration * 60,
+            attendees: [],
+            system_id: newBooking.system_id,
+            private: true,
+            all_day: false,
+            title: newBooking.title,
+        };
+
+        setIsLoading(true);
+
+        try {
+            await createEvent(newEventData);
+            setLastBooking({
+                title: newBooking.title,
+                date: newBooking.date,
+                floor: selectedRoom.location,
+                roomName: selectedRoom.name,
+            });
+            setIsModalOpen(false);
+            setIsSuccessOpen(true);
+        } catch (error) {
+            console.error("Error creating event", error);
+        } finally {
+            setIsLoading(false);
+        }
+    } else {
+        console.error("Date format is incorrect or not matched! Raw input:", newBooking.date);
+    }
+};
 
   const handleCloseSuccess = () => {
     setIsSuccessOpen(false);
