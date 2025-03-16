@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
 import "./BookingPage.css";
-import logoPlaceOs from "./assets/KJTech.png";
 import logoDff from "./assets/dff_logo.png";
 import SearchFilter from "./components/searchFilters";
 import RoomCard from "./components/RoomCard";
@@ -189,8 +188,8 @@ function BookingPage() {
         return;
     }
 
-    // Adjusted regular expression to match "DD/MM/YYYY, HH:mm:ss"
-    const dateParts = newBooking.date.match(/(\d{2})\/(\d{2})\/(\d{4}), (\d{2}):(\d{2}):(\d{2})/);
+    // Updated regular expression to match "D/M/YYYY, H:mm:ss AM/PM" or "DD/MM/YYYY, HH:mm:ss"
+    const dateParts = newBooking.date.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2}):(\d{2}) (AM|PM)?/);
 
     if (dateParts) {
         // Extract the components from the matched result
@@ -200,11 +199,23 @@ function BookingPage() {
         const hours = dateParts[4];
         const minutes = dateParts[5];
         const seconds = dateParts[6];
+        const ampm = dateParts[7];  // This will be undefined if not present
 
-        console.log("Parsed Date:", { day, month, year, hours, minutes, seconds });
+        console.log("Parsed Date:", { day, month, year, hours, minutes, seconds, ampm });
+
+        // If there's an AM/PM, adjust the hours to 24-hour format
+        let adjustedHours = parseInt(hours, 10);
+        if (ampm) {
+            if (ampm === "PM" && adjustedHours < 12) {
+                adjustedHours += 12;
+            }
+            if (ampm === "AM" && adjustedHours === 12) {
+                adjustedHours = 0;
+            }
+        }
 
         // Build the normalized date string in a standard format (ISO format)
-        const normalizedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+        const normalizedDate = `${year}-${month}-${day}T${adjustedHours}:${minutes}:${seconds}`;
         console.log("Normalized Date:", normalizedDate);
 
         // Now you can safely use the normalized date string to create the event
