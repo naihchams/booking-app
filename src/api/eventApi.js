@@ -36,10 +36,10 @@ export const createEvent = async (eventData) => {
     }
 
     if (eventData.end) {
-      eventData.end = DateTime.fromMillis(eventData.end)
-        .setZone(userTimeZone)
-        .toFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
-    }
+  eventData.end = DateTime.fromMillis(eventData.end)
+    .setZone(userTimeZone)
+    .toFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
+}
 
     // Sending the eventData to the API
     const response = await axios.post(EVENTS_API_URL, eventData, {
