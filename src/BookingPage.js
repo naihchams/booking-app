@@ -179,55 +179,52 @@ function BookingPage() {
   };
 
   const handleSaveBooking = async (newBooking) => {
-    // Check if the newBooking.date has a valid format
     console.log("Original Booking Date:", newBooking.date);
 
-    // Add a fallback log to check for undefined or unexpected formats
     if (!newBooking.date) {
         console.error("Booking date is missing or undefined!");
         return;
     }
 
-    // Updated regular expression to match "D/M/YYYY, H:mm:ss AM/PM" or "DD/MM/YYYY, HH:mm:ss"
-    const dateParts = newBooking.date.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2}):(\d{2}) (AM|PM)?/);
+    const dateParts = newBooking.date.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2}):(\d{2})\s?(AM|PM)?/);
 
     if (dateParts) {
-        // Extract the components from the matched result
-        const day = dateParts[1];
-        const month = dateParts[2];
-        const year = dateParts[3];
-        const hours = dateParts[4];
-        const minutes = dateParts[5];
-        const seconds = dateParts[6];
-        const ampm = dateParts[7];  // This will be undefined if not present
+        let [_, day, month, year, hours, minutes, seconds, ampm] = dateParts;
 
-        console.log("Parsed Date:", { day, month, year, hours, minutes, seconds, ampm });
-
-        // If there's an AM/PM, adjust the hours to 24-hour format
+        // Convert strings to integers explicitly
+        day = parseInt(day, 10);
+        month = parseInt(month, 10) - 1; // zero-based months
+        year = parseInt(year, 10);
         let adjustedHours = parseInt(hours, 10);
+        minutes = parseInt(minutes, 10);
+        seconds = parseInt(seconds, 10);
+
+        // Adjust for AM/PM explicitly
         if (ampm) {
-            if (ampm === "PM" && adjustedHours < 12) {
-                adjustedHours += 12;
-            }
-            if (ampm === "AM" && adjustedHours === 12) {
-                adjustedHours = 0;
-            }
+            if (ampm === "PM" && adjustedHours < 12) adjustedHours += 12;
+            if (ampm === "AM" && adjustedHours === 12) adjustedHours = 0;
         }
 
-        // Build the normalized date string in a standard format (ISO format)
-        const normalizedDate = `${year}-${month}-${day}T${adjustedHours}:${minutes}:${seconds}`;
-        console.log("Normalized Date:", normalizedDate);
+        // Use Date.UTC to guarantee cross-platform correctness
+        const utcTimestamp = Date.UTC(year, month, day, adjustedHours, minutes, seconds);
 
-        // Now you can safely use the normalized date string to create the event
+        if (isNaN(utcTimestamp)) {
+            console.error("Invalid date conversion. Raw input:", newBooking.date);
+            return;
+        }
+
+        // Prepare event data with Unix timestamps
         const newEventData = {
-            event_start: Math.floor(new Date(normalizedDate).getTime() / 1000),
-            event_end: Math.floor(new Date(normalizedDate).getTime() / 1000) + newBooking.duration * 60,
+            event_start: Math.floor(utcTimestamp / 1000),
+            event_end: Math.floor(utcTimestamp / 1000) + newBooking.duration * 60,
             attendees: [],
             system_id: newBooking.system_id,
             private: true,
             all_day: false,
             title: newBooking.title,
         };
+
+        console.log("Final event data:", newEventData);
 
         setIsLoading(true);
 
@@ -247,7 +244,7 @@ function BookingPage() {
             setIsLoading(false);
         }
     } else {
-        console.error("Date format is incorrect or not matched! Raw input:", newBooking.date);
+        console.error("Date format is incorrect or unmatched! Raw input:", newBooking.date);
     }
 };
 
