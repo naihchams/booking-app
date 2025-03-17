@@ -178,75 +178,56 @@ function BookingPage() {
     setIsModalOpen(true);
   };
 
-  const handleSaveBooking = async (newBooking) => {
-    console.log("Original Booking Date:", newBooking.date);
+const handleSaveBooking = async (newBooking) => {
+  console.log("Original Booking Date:", newBooking.date);
 
-    if (!newBooking.date) {
-        console.error("Booking date is missing or undefined!");
-        return;
-    }
+  if (!newBooking.date) {
+    console.error("Booking date is missing or undefined!");
+    return;
+  }
 
-    // Explicitly parse MM/DD/YYYY format
-    const dateParts = newBooking.date.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2}):(\d{2})\s?(AM|PM)?$/);
+  // Explicitly parse date with Luxon in Dubai timezone
+  const dateTime = DateTime.fromFormat(newBooking.date, "M/d/yyyy, h:mm:ss a", {
+    zone: "Asia/Dubai",
+  });
 
-    if (!dateParts) {
-        console.error("Date format is incorrect or unmatched! Raw input:", newBooking.date);
-        return;
-    }
+  if (!dateTime.isValid) {
+    console.error("Invalid date:", dateTime.invalidExplanation);
+    return;
+  }
 
-    let [_, month, day, year, hours, minutes, seconds, ampm] = dateParts;
+  // Correct UTC timestamp conversion
+  const utcTimestamp = dateTime.toUTC().toSeconds();
 
-    // Convert to integers explicitly
-    day = parseInt(day, 10);
-    month = parseInt(month, 10) - 1; // JS months are 0-based
-    year = parseInt(year, 10);
-    let adjustedHours = parseInt(hours, 10);
-    minutes = parseInt(minutes, 10);
-    seconds = parseInt(seconds, 10);
-
-    // Adjust AM/PM properly
-    if (ampm) {
-        if (ampm === "PM" && adjustedHours < 12) adjustedHours += 12;
-        if (ampm === "AM" && adjustedHours === 12) adjustedHours = 0;
-    }
-
-    // Verify parsed values
-    console.log(`Parsed Date - Year: ${year}, Month: ${month + 1}, Day: ${day}, Hour: ${adjustedHours}, Minute: ${minutes}`);
-
-    const utcTimestamp = Date.UTC(year, month, day, adjustedHours, minutes, seconds);
-
-    if (isNaN(utcTimestamp)) {
-        console.error("Invalid date conversion. Raw input:", newBooking.date);
-        return;
-    }
-
-    // Prepare event data with correct Unix timestamps
-    const newEventData = {
-      event_start: Math.floor(utcTimestamp / 1000),
-      event_end: Math.floor(utcTimestamp / 1000) + 3600, // assuming default 1-hour duration
-      attendees: [], // <-- THIS FIELD IS REQUIRED
-      system_id: newBooking.system_id,
-      private: true,
-      all_day: false,
-      title: newBooking.title,
+  const newEventData = {
+    event_start: utcTimestamp,
+    event_end: utcTimestamp + newBooking.duration * 60,
+    attendees: [],
+    system_id: newBooking.system_id,
+    private: true,
+    all_day: false,
+    title: newBooking.title,
   };
 
-    // Rest of your code remains unchanged
-    setIsModalOpen(false);
+  console.log("Final event data (UTC):", newEventData);
 
-    try {
-        await createEvent(newEventData);
-        setLastBooking({
-            title: newBooking.title,
-            date: newBooking.date,
-            floor: selectedRoom.location,
-            roomName: selectedRoom.name,
-        });
-        setIsSuccessOpen(true);
-    } catch (error) {
-        console.error("Error creating event:", error);
-    }
-}
+  setIsLoading(true);
+  try {
+    await createEvent(newEventData);
+    setLastBooking({
+      title: newBooking.title,
+      date: newBooking.date,
+      floor: selectedRoom.location,
+      roomName: selectedRoom.name,
+    });
+    setIsModalOpen(false);
+    setIsSuccessOpen(true);
+  } catch (error) {
+    console.error("Error creating event:", error);
+  } finally {
+    setIsLoading(false);
+  }
+};
 
 
   const handleCloseSuccess = () => {
