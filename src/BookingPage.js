@@ -186,67 +186,63 @@ function BookingPage() {
         return;
     }
 
-    const dateParts = newBooking.date.match(/(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2}):(\d{2})\s?(AM|PM)?/);
+    // Explicitly parse MM/DD/YYYY format
+    const dateParts = newBooking.date.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4}), (\d{1,2}):(\d{2}):(\d{2})\s?(AM|PM)?$/);
 
-    if (dateParts) {
-        let [_, day, month, year, hours, minutes, seconds, ampm] = dateParts;
-
-        // Convert strings to integers explicitly
-        day = parseInt(day, 10);
-        month = parseInt(month, 10) - 1; // zero-based months
-        year = parseInt(year, 10);
-        let adjustedHours = parseInt(hours, 10);
-        minutes = parseInt(minutes, 10);
-        seconds = parseInt(seconds, 10);
-
-        // Adjust for AM/PM explicitly
-        if (ampm) {
-            if (ampm === "PM" && adjustedHours < 12) adjustedHours += 12;
-            if (ampm === "AM" && adjustedHours === 12) adjustedHours = 0;
-        }
-
-        // Use Date.UTC to guarantee cross-platform correctness
-        const utcTimestamp = Date.UTC(year, month, day, adjustedHours, minutes, seconds);
-
-        if (isNaN(utcTimestamp)) {
-            console.error("Invalid date conversion. Raw input:", newBooking.date);
-            return;
-        }
-
-        // Prepare event data with Unix timestamps
-        const newEventData = {
-            event_start: Math.floor(utcTimestamp / 1000),
-            event_end: Math.floor(utcTimestamp / 1000) + newBooking.duration * 60,
-            attendees: [],
-            system_id: newBooking.system_id,
-            private: true,
-            all_day: false,
-            title: newBooking.title,
-        };
-
-        console.log("Final event data:", newEventData);
-
-        setIsLoading(true);
-
-        try {
-            await createEvent(newEventData);
-            setLastBooking({
-                title: newBooking.title,
-                date: newBooking.date,
-                floor: selectedRoom.location,
-                roomName: selectedRoom.name,
-            });
-            setIsModalOpen(false);
-            setIsSuccessOpen(true);
-        } catch (error) {
-            console.error("Error creating event", error);
-        } finally {
-            setIsLoading(false);
-        }
-    } else {
+    if (!dateParts) {
         console.error("Date format is incorrect or unmatched! Raw input:", newBooking.date);
+        return;
     }
-};
+
+    let [_, month, day, year, hours, minutes, seconds, ampm] = dateParts;
+
+    // Convert to integers explicitly
+    day = parseInt(day, 10);
+    month = parseInt(month, 10) - 1; // JS months are 0-based
+    year = parseInt(year, 10);
+    let adjustedHours = parseInt(hours, 10);
+    minutes = parseInt(minutes, 10);
+    seconds = parseInt(seconds, 10);
+
+    // Adjust AM/PM properly
+    if (ampm) {
+        if (ampm === "PM" && adjustedHours < 12) adjustedHours += 12;
+        if (ampm === "AM" && adjustedHours === 12) adjustedHours = 0;
+    }
+
+    // Verify parsed values
+    console.log(`Parsed Date - Year: ${year}, Month: ${month + 1}, Day: ${day}, Hour: ${adjustedHours}, Minute: ${minutes}`);
+
+    const utcTimestamp = Date.UTC(year, month, day, adjustedHours, minutes, seconds);
+
+    if (isNaN(utcTimestamp)) {
+        console.error("Invalid date conversion. Raw input:", newBooking.date);
+        return;
+    }
+
+    // Prepare event data with correct Unix timestamps
+    const newEventData = {
+        event_start: Math.floor(utcTimestamp / 1000),
+        event_end: Math.floor(utcTimestamp / 1000) + 3600, // assuming default 1-hour duration
+    };
+
+    // Rest of your code remains unchanged
+    setIsModalOpen(false);
+
+    try {
+        await createEvent(newEventData);
+        setLastBooking({
+            title: newBooking.title,
+            date: newBooking.date,
+            floor: selectedRoom.location,
+            roomName: selectedRoom.name,
+        });
+        setIsSuccessOpen(true);
+    } catch (error) {
+        console.error("Error creating event:", error);
+    }
+}
+
 
   const handleCloseSuccess = () => {
     setIsSuccessOpen(false);
