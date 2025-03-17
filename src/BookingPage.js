@@ -44,9 +44,9 @@ function BookingPage() {
             email: system.email,
             name: system.display_name || system.name,
             location:
-              system.name == "Accelerate"
-                ? "Area 2071"
-                : (system.name == "Collaborate" ? "Area 2071" : "DFA") ||
+  ["Accelerate", "Collaborate", "Disrupt", "Future", "Huddle", "Innovate", "Y", "X", "Reglab", "Z"].includes(system.name)
+    ? "Area 2071"
+    : "DFA" ||
                   "Default Location",
             capacity: system.capacity,
             favourite: false,
