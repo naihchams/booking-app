@@ -222,9 +222,14 @@ function BookingPage() {
 
     // Prepare event data with correct Unix timestamps
     const newEventData = {
-        event_start: Math.floor(utcTimestamp / 1000),
-        event_end: Math.floor(utcTimestamp / 1000) + 3600, // assuming default 1-hour duration
-    };
+      event_start: Math.floor(utcTimestamp / 1000),
+      event_end: Math.floor(utcTimestamp / 1000) + 3600, // assuming default 1-hour duration
+      attendees: [], // <-- THIS FIELD IS REQUIRED
+      system_id: newBooking.system_id,
+      private: true,
+      all_day: false,
+      title: newBooking.title,
+  };
 
     // Rest of your code remains unchanged
     setIsModalOpen(false);
