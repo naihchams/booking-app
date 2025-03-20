@@ -1,11 +1,11 @@
 import axios from "axios";
 
 const SYSTEMS_API_URL = process.env.REACT_APP_SYSTEMS_API_URL;
-const params = new URLSearchParams(window.location.search);
-const API_KEY = params.get("apikey");
+
+const token = localStorage.getItem("accessToken");
 
 const config = {
-  headers: { "X-API-KEY": API_KEY },
+  headers: { Authorization: `Bearer ${token}` },
 };
 
 export const fetchSystems = () => axios.get(SYSTEMS_API_URL, config);

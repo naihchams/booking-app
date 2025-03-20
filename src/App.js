@@ -1,10 +1,14 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 import { config } from "./Config";
 import { PublicClientApplication } from "@azure/msal-browser";
 import BookingPage from "./BookingPage";
 import QRPage from "./qr-page";
-import { Navigate } from "react-router-dom";
 
 class App extends Component {
   constructor(props) {
@@ -30,14 +34,39 @@ class App extends Component {
     try {
       const response =
         await this.PublicClientApplication.handleRedirectPromise();
+      let account = null;
+
       if (response && response.account) {
+        account = response.account;
         this.setState({
           isAuthenticated: true,
-          user: response.account,
+          user: account,
         });
       } else {
-        this.login();
+        const currentAccounts = this.PublicClientApplication.getAllAccounts();
+        if (currentAccounts.length > 0) {
+          account = currentAccounts[0];
+          this.setState({
+            isAuthenticated: true,
+            user: account,
+          });
+        } else {
+          this.login();
+          return;
+        }
       }
+
+      const tokenRequest = {
+        scopes: config.scopes,
+        account: account,
+      };
+
+      const tokenResponse =
+        await this.PublicClientApplication.acquireTokenSilent(tokenRequest);
+      const accessToken = tokenResponse.accessToken;
+
+      localStorage.setItem("accessToken", accessToken);
+      console.log("Access token saved to local storage:", accessToken);
     } catch (err) {
       console.error("MSAL error:", err);
       this.setState({ error: err });
@@ -57,11 +86,20 @@ class App extends Component {
   };
 
   logout() {
+    localStorage.removeItem("accessToken");
     this.PublicClientApplication.logout();
   }
 
   render() {
-    return <BookingPage />;
+    return (
+      <Router>
+        <Routes>
+          <Route path="/booking" element={<BookingPage />} />
+          <Route path="/qr" element={<QRPage />} />
+          <Route path="*" element={<Navigate to="/booking" />} />
+        </Routes>
+      </Router>
+    );
   }
 }
 

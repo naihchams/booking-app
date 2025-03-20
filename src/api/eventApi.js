@@ -2,15 +2,15 @@ import axios from "axios";
 import { DateTime } from "luxon";
 
 const EVENTS_API_URL = process.env.REACT_APP_EVENTS_API_URL;
-const params = new URLSearchParams(window.location.search);
-const API_KEY = params.get("apikey");
+
+const token = localStorage.getItem("accessToken");
+
+const config = {
+  headers: { Authorization: `Bearer ${token}` },
+};
 
 // Automatically detect the device's timezone
 const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-const config = {
-  headers: { "X-API-KEY": API_KEY },
-};
 
 export const fetchEvents = async (periodStart, periodEnd, zoneIds) => {
   try {
@@ -36,10 +36,10 @@ export const createEvent = async (eventData) => {
     }
 
     if (eventData.end) {
-  eventData.end = DateTime.fromMillis(eventData.end)
-    .setZone(userTimeZone)
-    .toFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
-}
+      eventData.end = DateTime.fromMillis(eventData.end)
+        .setZone(userTimeZone)
+        .toFormat("yyyy-MM-dd'T'HH:mm:ssZZ");
+    }
 
     // Sending the eventData to the API
     const response = await axios.post(EVENTS_API_URL, eventData, {

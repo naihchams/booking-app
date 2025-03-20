@@ -2,11 +2,10 @@ import axios from "axios";
 
 const AVAILABILITY_API_URL = process.env.REACT_APP_AVAILABILITY_API_URL;
 
-const params = new URLSearchParams(window.location.search);
-const API_KEY = params.get("apikey");
+const token = localStorage.getItem("accessToken");
 
 const config = {
-  headers: { "X-API-KEY": API_KEY },
+  headers: { Authorization: `Bearer ${token}` },
 };
 
 export const fetchAvailability = async (periodStart, periodEnd, roomId) => {
