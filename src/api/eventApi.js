@@ -44,7 +44,7 @@ export const createEvent = async (eventData) => {
     // Sending the eventData to the API
     const response = await axios.post(EVENTS_API_URL, eventData, {
       headers: {
-        "X-API-KEY": API_KEY,
+        Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
       },
     });
