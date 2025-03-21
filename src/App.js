@@ -32,6 +32,9 @@ class App extends Component {
 
   async componentDidMount() {
     try {
+      // First, initialize the PublicClientApplication
+      await this.PublicClientApplication.initialize();
+
       const response =
         await this.PublicClientApplication.handleRedirectPromise();
       let account = null;
@@ -75,6 +78,10 @@ class App extends Component {
 
   login = async () => {
     try {
+      console.log("Initiating loginRedirect...");
+      // Optionally ensure initialization here if not already done:
+      await this.PublicClientApplication.initialize();
+
       await this.PublicClientApplication.loginRedirect({
         scopes: config.scopes,
         prompt: "select_account",
