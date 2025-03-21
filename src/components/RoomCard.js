@@ -3,10 +3,10 @@ import { FaHeart, FaMapMarkerAlt, FaRegHeart } from "react-icons/fa";
 import "./RoomCard.css";
 
 function RoomCard({ room, onBook, onToggleFavorite }) {
-  const { id, name, location, capacity, imageUrl, booked, favourite } = room;
+  const { id, name, location, capacity, imageUrl, favourite } = room;
 
   return (
-    <div className="room-card">
+    <div className="room-card" onClick={onBook}>
       <img src={imageUrl} alt={name} className="room-image" />
 
       <div className="room-details">
@@ -18,19 +18,15 @@ function RoomCard({ room, onBook, onToggleFavorite }) {
         </div>
 
         <p className="capacity">Capacity: {capacity}</p>
-
-        {booked ? (
-          <button className="booked-button" disabled>
-            Booked
-          </button>
-        ) : (
-          <button className="book-button" onClick={onBook}>
-            Book
-          </button>
-        )}
       </div>
 
-      <div className="favorite-icon" onClick={() => onToggleFavorite(id)}>
+      <div
+        className="favorite-icon"
+        onClick={(e) => {
+          e.stopPropagation();
+          onToggleFavorite(id);
+        }}
+      >
         {favourite ? <FaHeart className="favorited" /> : <FaRegHeart />}
       </div>
     </div>

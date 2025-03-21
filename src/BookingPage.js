@@ -43,11 +43,20 @@ function BookingPage() {
             id: system.id,
             email: system.email,
             name: system.display_name || system.name,
-            location:
-  ["Accelerate", "Collaborate", "Disrupt", "Future", "Huddle", "Innovate", "Y", "X", "Reglab", "Z"].includes(system.name)
-    ? "Area 2071"
-    : "DFA" ||
-                  "Default Location",
+            location: [
+              "Accelerate",
+              "Collaborate",
+              "Disrupt",
+              "Future",
+              "Huddle",
+              "Innovate",
+              "Y",
+              "X",
+              "Reglab",
+              "Z",
+            ].includes(system.name)
+              ? "Area 2071"
+              : "DFA" || "Default Location",
             capacity: system.capacity,
             favourite: false,
             imageUrl: system.images?.[0] || ACCELERATE_IMAGE,
@@ -69,12 +78,15 @@ function BookingPage() {
         const roundTo30Min = (timeStr) => {
           let [hours, minutes] = timeStr.split(":").map(Number);
           minutes = minutes < 30 ? 0 : 30;
-          return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
-      };
-      
-      const dateTimeStr = `${filters.date}T${roundTo30Min(filters.time)}:00`;
-      const periodStart = Math.floor(new Date(dateTimeStr).getTime() / 1000);
-      const periodEnd = periodStart + 30 * 60;
+          return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(
+            2,
+            "0"
+          )}`;
+        };
+
+        const dateTimeStr = `${filters.date}T${roundTo30Min(filters.time)}:00`;
+        const periodStart = Math.floor(new Date(dateTimeStr).getTime() / 1000);
+        const periodEnd = periodStart + 30 * 60;
         try {
           console.log("1-Fetching availability for:");
           console.log("Start:", new Date(periodStart * 1000).toLocaleString());
@@ -178,57 +190,60 @@ function BookingPage() {
     setIsModalOpen(true);
   };
 
-const handleSaveBooking = async (newBooking) => {
-  console.log("Original Booking Date:", newBooking.date);
+  const handleSaveBooking = async (newBooking) => {
+    console.log("Original Booking Date:", newBooking.date);
 
-  if (!newBooking.date) {
-    console.error("Booking date is missing or undefined!");
-    return;
-  }
+    if (!newBooking.date) {
+      console.error("Booking date is missing or undefined!");
+      return;
+    }
 
-  // Explicitly parse date with Luxon in Dubai timezone
-  const dateTime = DateTime.fromFormat(newBooking.date, "M/d/yyyy, h:mm:ss a", {
-    zone: "Asia/Dubai",
-  });
+    // Explicitly parse date with Luxon in Dubai timezone
+    const dateTime = DateTime.fromFormat(
+      newBooking.date,
+      "M/d/yyyy, h:mm:ss a",
+      {
+        zone: "Asia/Dubai",
+      }
+    );
 
-  if (!dateTime.isValid) {
-    console.error("Invalid date:", dateTime.invalidExplanation);
-    return;
-  }
+    if (!dateTime.isValid) {
+      console.error("Invalid date:", dateTime.invalidExplanation);
+      return;
+    }
 
-  // Correct UTC timestamp conversion
-  const utcTimestamp = dateTime.toUTC().toSeconds();
+    // Correct UTC timestamp conversion
+    const utcTimestamp = dateTime.toUTC().toSeconds();
 
-  const newEventData = {
-    event_start: utcTimestamp,
-    event_end: utcTimestamp + newBooking.duration * 60,
-    attendees: [],
-    system_id: newBooking.system_id,
-    private: true,
-    all_day: false,
-    title: newBooking.title,
-  };
-
-  console.log("Final event data (UTC):", newEventData);
-
-  setIsLoading(true);
-  try {
-    await createEvent(newEventData);
-    setLastBooking({
+    const newEventData = {
+      event_start: utcTimestamp,
+      event_end: utcTimestamp + newBooking.duration * 60,
+      attendees: [],
+      system_id: newBooking.system_id,
+      private: true,
+      all_day: false,
       title: newBooking.title,
-      date: newBooking.date,
-      floor: selectedRoom.location,
-      roomName: selectedRoom.name,
-    });
-    setIsModalOpen(false);
-    setIsSuccessOpen(true);
-  } catch (error) {
-    console.error("Error creating event:", error);
-  } finally {
-    setIsLoading(false);
-  }
-};
+    };
 
+    console.log("Final event data (UTC):", newEventData);
+
+    setIsLoading(true);
+    try {
+      await createEvent(newEventData);
+      setLastBooking({
+        title: newBooking.title,
+        date: newBooking.date,
+        floor: selectedRoom.location,
+        roomName: selectedRoom.name,
+      });
+      setIsModalOpen(false);
+      setIsSuccessOpen(true);
+    } catch (error) {
+      console.error("Error creating event:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleCloseSuccess = () => {
     setIsSuccessOpen(false);
@@ -325,6 +340,8 @@ const handleSaveBooking = async (newBooking) => {
         onClose={() => setIsModalOpen(false)}
         onSave={handleSaveBooking}
         selectedRoom={selectedRoom}
+        filterDate={filters.date}
+        filterTime={filters.time}
       />
 
       <BookingSuccessModal

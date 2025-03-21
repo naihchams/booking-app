@@ -3,23 +3,45 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "./NewBookingModal.css";
 
-function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
+function NewBookingModal({
+  isOpen,
+  onClose,
+  onSave,
+  selectedRoom,
+  filterDate,
+  filterTime,
+}) {
   const [title, setTitle] = useState("");
   const [space, setSpace] = useState("");
 
+  // Default current date/time
   const getCurrentDateTime = () => {
     const now = new Date();
     now.setSeconds(0, 0);
     return now;
   };
 
-  const [startDate, setStartDate] = useState(getCurrentDateTime());
+  useEffect(() => {
+    const newDate = getInitialDateTime();
+    setStartDate(newDate);
+  }, [filterDate, filterTime]);
+
+  // Use filter values if available; otherwise, use the current date/time
+  const getInitialDateTime = () => {
+    if (filterDate && filterTime) {
+      // Create a Date object by combining filterDate and filterTime.
+      // Assuming filterDate is in "YYYY-MM-DD" format and filterTime is in "HH:mm"
+      return new Date(`${filterDate}T${filterTime}:00`);
+    }
+    return getCurrentDateTime();
+  };
+
+  const [startDate, setStartDate] = useState(getInitialDateTime());
   const [endDate, setEndDate] = useState(() => {
-    const d = getCurrentDateTime();
+    const d = new Date(startDate);
     d.setMinutes(d.getMinutes() + 30);
     return d;
   });
-
   const [duration, setDuration] = useState(30);
 
   useEffect(() => {
@@ -30,6 +52,7 @@ function NewBookingModal({ isOpen, onClose, onSave, selectedRoom }) {
   }, [selectedRoom]);
 
   useEffect(() => {
+    // Update endDate whenever startDate or duration changes.
     const newEnd = new Date(startDate);
     newEnd.setMinutes(startDate.getMinutes() + duration);
     setEndDate(newEnd);
